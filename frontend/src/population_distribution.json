@@ -1,0 +1,903 @@
+{
+  "last_pymnt_amnt": {
+    "type": "numeric",
+    "distribution": [
+      {
+        "value": 0.0,
+        "label": "0.0–200.0",
+        "count": 125124,
+        "porcentaje": 16.98
+      },
+      {
+        "value": 200.0,
+        "label": "200.0–400.0",
+        "count": 260995,
+        "porcentaje": 35.42
+      },
+      {
+        "value": 400.0,
+        "label": "400.0–600.0",
+        "count": 171060,
+        "porcentaje": 23.21
+      },
+      {
+        "value": 600.0,
+        "label": "600.0–800.0",
+        "count": 96724,
+        "porcentaje": 13.13
+      },
+      {
+        "value": 800.0,
+        "label": "800.0–1000.0",
+        "count": 42334,
+        "porcentaje": 5.75
+      },
+      {
+        "value": 1000.0,
+        "label": "1000.0–1200.0",
+        "count": 19208,
+        "porcentaje": 2.61
+      },
+      {
+        "value": 1200.0,
+        "label": "1200.0–1400.0",
+        "count": 7416,
+        "porcentaje": 1.01
+      },
+      {
+        "value": 1400.0,
+        "label": "1400.0–1600.0",
+        "count": 2619,
+        "porcentaje": 0.36
+      },
+      {
+        "value": 1600.0,
+        "label": "1600.0–1800.0",
+        "count": 2498,
+        "porcentaje": 0.34
+      },
+      {
+        "value": 1800.0,
+        "label": "1800.0–2000.0",
+        "count": 2600,
+        "porcentaje": 0.35
+      },
+      {
+        "value": 2000.0,
+        "label": "2000.0–2200.0",
+        "count": 2569,
+        "porcentaje": 0.35
+      },
+      {
+        "value": 2200.0,
+        "label": "2200.0–2400.0",
+        "count": 2597,
+        "porcentaje": 0.35
+      },
+      {
+        "value": 2400.0,
+        "label": "2400.0–2600.0",
+        "count": 1128,
+        "porcentaje": 0.15
+      }
+    ]
+  },
+  "recoveries": {
+    "type": "numeric",
+    "distribution": [
+      {
+        "value": 0.0,
+        "label": "0.0–2000.0",
+        "count": 729506,
+        "porcentaje": 99.0
+      },
+      {
+        "value": 2000.0,
+        "label": "2000.0–4000.0",
+        "count": 5359,
+        "porcentaje": 0.73
+      },
+      {
+        "value": 4000.0,
+        "label": "4000.0–6000.0",
+        "count": 1476,
+        "porcentaje": 0.2
+      },
+      {
+        "value": 6000.0,
+        "label": "6000.0–8000.0",
+        "count": 296,
+        "porcentaje": 0.04
+      },
+      {
+        "value": 8000.0,
+        "label": "8000.0–10000.0",
+        "count": 90,
+        "porcentaje": 0.01
+      },
+      {
+        "value": 10000.0,
+        "label": "10000.0–12000.0",
+        "count": 57,
+        "porcentaje": 0.01
+      },
+      {
+        "value": 12000.0,
+        "label": "12000.0–14000.0",
+        "count": 27,
+        "porcentaje": 0.0
+      },
+      {
+        "value": 14000.0,
+        "label": "14000.0–16000.0",
+        "count": 22,
+        "porcentaje": 0.0
+      },
+      {
+        "value": 16000.0,
+        "label": "16000.0–18000.0",
+        "count": 11,
+        "porcentaje": 0.0
+      },
+      {
+        "value": 18000.0,
+        "label": "18000.0–20000.0",
+        "count": 7,
+        "porcentaje": 0.0
+      },
+      {
+        "value": 20000.0,
+        "label": "20000.0–22000.0",
+        "count": 7,
+        "porcentaje": 0.0
+      },
+      {
+        "value": 22000.0,
+        "label": "22000.0–24000.0",
+        "count": 5,
+        "porcentaje": 0.0
+      },
+      {
+        "value": 24000.0,
+        "label": "24000.0–26000.0",
+        "count": 3,
+        "porcentaje": 0.0
+      },
+      {
+        "value": 26000.0,
+        "label": "26000.0–28000.0",
+        "count": 2,
+        "porcentaje": 0.0
+      },
+      {
+        "value": 28000.0,
+        "label": "28000.0–30000.0",
+        "count": 2,
+        "porcentaje": 0.0
+      },
+      {
+        "value": 30000.0,
+        "label": "30000.0–32000.0",
+        "count": 1,
+        "porcentaje": 0.0
+      },
+      {
+        "value": 32000.0,
+        "label": "32000.0–34000.0",
+        "count": 1,
+        "porcentaje": 0.0
+      }
+    ]
+  },
+  "out_prncp": {
+    "type": "numeric",
+    "distribution": [
+      {
+        "value": 0.0,
+        "label": "0.0–3000.0",
+        "count": 176547,
+        "porcentaje": 23.96
+      },
+      {
+        "value": 3000.0,
+        "label": "3000.0–6000.0",
+        "count": 106409,
+        "porcentaje": 14.44
+      },
+      {
+        "value": 6000.0,
+        "label": "6000.0–9000.0",
+        "count": 97119,
+        "porcentaje": 13.18
+      },
+      {
+        "value": 9000.0,
+        "label": "9000.0–12000.0",
+        "count": 97755,
+        "porcentaje": 13.27
+      },
+      {
+        "value": 12000.0,
+        "label": "12000.0–15000.0",
+        "count": 74341,
+        "porcentaje": 10.09
+      },
+      {
+        "value": 15000.0,
+        "label": "15000.0–18000.0",
+        "count": 54102,
+        "porcentaje": 7.34
+      },
+      {
+        "value": 18000.0,
+        "label": "18000.0–21000.0",
+        "count": 44969,
+        "porcentaje": 6.1
+      },
+      {
+        "value": 21000.0,
+        "label": "21000.0–24000.0",
+        "count": 31804,
+        "porcentaje": 4.32
+      },
+      {
+        "value": 24000.0,
+        "label": "24000.0–27000.0",
+        "count": 20281,
+        "porcentaje": 2.75
+      },
+      {
+        "value": 27000.0,
+        "label": "27000.0–30000.0",
+        "count": 15887,
+        "porcentaje": 2.16
+      },
+      {
+        "value": 30000.0,
+        "label": "30000.0–33000.0",
+        "count": 10392,
+        "porcentaje": 1.41
+      },
+      {
+        "value": 33000.0,
+        "label": "33000.0–36000.0",
+        "count": 7263,
+        "porcentaje": 0.99
+      },
+      {
+        "value": 36000.0,
+        "label": "36000.0–39000.0",
+        "count": 0,
+        "porcentaje": 0.0
+      },
+      {
+        "value": 39000.0,
+        "label": "39000.0–42000.0",
+        "count": 1,
+        "porcentaje": 0.0
+      },
+      {
+        "value": 42000.0,
+        "label": "42000.0–45000.0",
+        "count": 0,
+        "porcentaje": 0.0
+      },
+      {
+        "value": 45000.0,
+        "label": "45000.0–48000.0",
+        "count": 1,
+        "porcentaje": 0.0
+      },
+      {
+        "value": 48000.0,
+        "label": "48000.0–51000.0",
+        "count": 1,
+        "porcentaje": 0.0
+      }
+    ]
+  },
+  "int_rate": {
+    "type": "numeric",
+    "distribution": [
+      {
+        "value": 5.0,
+        "label": "5.0–7.0",
+        "count": 53826,
+        "porcentaje": 7.3
+      },
+      {
+        "value": 7.0,
+        "label": "7.0–9.0",
+        "count": 91185,
+        "porcentaje": 12.37
+      },
+      {
+        "value": 9.0,
+        "label": "9.0–11.0",
+        "count": 104953,
+        "porcentaje": 14.24
+      },
+      {
+        "value": 11.0,
+        "label": "11.0–13.0",
+        "count": 130045,
+        "porcentaje": 17.65
+      },
+      {
+        "value": 13.0,
+        "label": "13.0–15.0",
+        "count": 129499,
+        "porcentaje": 17.57
+      },
+      {
+        "value": 15.0,
+        "label": "15.0–17.0",
+        "count": 87106,
+        "porcentaje": 11.82
+      },
+      {
+        "value": 17.0,
+        "label": "17.0–19.0",
+        "count": 70748,
+        "porcentaje": 9.6
+      },
+      {
+        "value": 19.0,
+        "label": "19.0–21.0",
+        "count": 35071,
+        "porcentaje": 4.76
+      },
+      {
+        "value": 21.0,
+        "label": "21.0–23.0",
+        "count": 16891,
+        "porcentaje": 2.29
+      },
+      {
+        "value": 23.0,
+        "label": "23.0–25.0",
+        "count": 12112,
+        "porcentaje": 1.64
+      },
+      {
+        "value": 25.0,
+        "label": "25.0–27.0",
+        "count": 4663,
+        "porcentaje": 0.63
+      },
+      {
+        "value": 27.0,
+        "label": "27.0–29.0",
+        "count": 773,
+        "porcentaje": 0.1
+      }
+    ]
+  },
+  "term": {
+    "type": "categorical",
+    "distribution": [
+      {
+        "value": " 36 months",
+        "label": " 36 months",
+        "count": 508577,
+        "porcentaje": 69.02
+      },
+      {
+        "value": " 60 months",
+        "label": " 60 months",
+        "count": 228295,
+        "porcentaje": 30.98
+      }
+    ]
+  },
+  "total_rec_late_fee": {
+    "type": "numeric",
+    "distribution": [
+      {
+        "value": 0.0,
+        "label": "0.0–20.0",
+        "count": 731069,
+        "porcentaje": 99.21
+      },
+      {
+        "value": 20.0,
+        "label": "20.0–40.0",
+        "count": 3885,
+        "porcentaje": 0.53
+      },
+      {
+        "value": 40.0,
+        "label": "40.0–60.0",
+        "count": 1236,
+        "porcentaje": 0.17
+      },
+      {
+        "value": 60.0,
+        "label": "60.0–80.0",
+        "count": 399,
+        "porcentaje": 0.05
+      },
+      {
+        "value": 80.0,
+        "label": "80.0–100.0",
+        "count": 141,
+        "porcentaje": 0.02
+      },
+      {
+        "value": 100.0,
+        "label": "100.0–120.0",
+        "count": 60,
+        "porcentaje": 0.01
+      },
+      {
+        "value": 120.0,
+        "label": "120.0–140.0",
+        "count": 45,
+        "porcentaje": 0.01
+      },
+      {
+        "value": 140.0,
+        "label": "140.0–160.0",
+        "count": 18,
+        "porcentaje": 0.0
+      },
+      {
+        "value": 160.0,
+        "label": "160.0–180.0",
+        "count": 6,
+        "porcentaje": 0.0
+      },
+      {
+        "value": 180.0,
+        "label": "180.0–200.0",
+        "count": 5,
+        "porcentaje": 0.0
+      },
+      {
+        "value": 200.0,
+        "label": "200.0–220.0",
+        "count": 2,
+        "porcentaje": 0.0
+      },
+      {
+        "value": 220.0,
+        "label": "220.0–240.0",
+        "count": 1,
+        "porcentaje": 0.0
+      },
+      {
+        "value": 240.0,
+        "label": "240.0–260.0",
+        "count": 2,
+        "porcentaje": 0.0
+      },
+      {
+        "value": 260.0,
+        "label": "260.0–280.0",
+        "count": 1,
+        "porcentaje": 0.0
+      },
+      {
+        "value": 280.0,
+        "label": "280.0–300.0",
+        "count": 1,
+        "porcentaje": 0.0
+      },
+      {
+        "value": 300.0,
+        "label": "300.0–320.0",
+        "count": 0,
+        "porcentaje": 0.0
+      },
+      {
+        "value": 320.0,
+        "label": "320.0–340.0",
+        "count": 0,
+        "porcentaje": 0.0
+      },
+      {
+        "value": 340.0,
+        "label": "340.0–360.0",
+        "count": 1,
+        "porcentaje": 0.0
+      }
+    ]
+  },
+  "tot_cur_bal": {
+    "type": "numeric",
+    "distribution": [
+      {
+        "value": 0.0,
+        "label": "0.0–40000.0",
+        "count": 233202,
+        "porcentaje": 33.92
+      },
+      {
+        "value": 40000.0,
+        "label": "40000.0–80000.0",
+        "count": 116571,
+        "porcentaje": 16.95
+      },
+      {
+        "value": 80000.0,
+        "label": "80000.0–120000.0",
+        "count": 57645,
+        "porcentaje": 8.38
+      },
+      {
+        "value": 120000.0,
+        "label": "120000.0–160000.0",
+        "count": 53893,
+        "porcentaje": 7.84
+      },
+      {
+        "value": 160000.0,
+        "label": "160000.0–200000.0",
+        "count": 52136,
+        "porcentaje": 7.58
+      },
+      {
+        "value": 200000.0,
+        "label": "200000.0–240000.0",
+        "count": 43017,
+        "porcentaje": 6.26
+      },
+      {
+        "value": 240000.0,
+        "label": "240000.0–280000.0",
+        "count": 34267,
+        "porcentaje": 4.98
+      },
+      {
+        "value": 280000.0,
+        "label": "280000.0–320000.0",
+        "count": 26343,
+        "porcentaje": 3.83
+      },
+      {
+        "value": 320000.0,
+        "label": "320000.0–360000.0",
+        "count": 19505,
+        "porcentaje": 2.84
+      },
+      {
+        "value": 360000.0,
+        "label": "360000.0–400000.0",
+        "count": 14512,
+        "porcentaje": 2.11
+      },
+      {
+        "value": 400000.0,
+        "label": "400000.0–440000.0",
+        "count": 11035,
+        "porcentaje": 1.6
+      },
+      {
+        "value": 440000.0,
+        "label": "440000.0–480000.0",
+        "count": 7886,
+        "porcentaje": 1.15
+      },
+      {
+        "value": 480000.0,
+        "label": "480000.0–520000.0",
+        "count": 5470,
+        "porcentaje": 0.8
+      },
+      {
+        "value": 520000.0,
+        "label": "520000.0–560000.0",
+        "count": 3954,
+        "porcentaje": 0.58
+      },
+      {
+        "value": 560000.0,
+        "label": "560000.0–600000.0",
+        "count": 2944,
+        "porcentaje": 0.43
+      },
+      {
+        "value": 600000.0,
+        "label": "600000.0–640000.0",
+        "count": 2139,
+        "porcentaje": 0.31
+      },
+      {
+        "value": 640000.0,
+        "label": "640000.0–680000.0",
+        "count": 1618,
+        "porcentaje": 0.24
+      },
+      {
+        "value": 680000.0,
+        "label": "680000.0–720000.0",
+        "count": 1210,
+        "porcentaje": 0.18
+      },
+      {
+        "value": 720000.0,
+        "label": "720000.0–760000.0",
+        "count": 247,
+        "porcentaje": 0.04
+      }
+    ]
+  },
+  "dti": {
+    "type": "numeric",
+    "distribution": [
+      {
+        "value": 0.0,
+        "label": "0.0–4.0",
+        "count": 21364,
+        "porcentaje": 2.9
+      },
+      {
+        "value": 4.0,
+        "label": "4.0–8.0",
+        "count": 58921,
+        "porcentaje": 8.0
+      },
+      {
+        "value": 8.0,
+        "label": "8.0–12.0",
+        "count": 98434,
+        "porcentaje": 13.36
+      },
+      {
+        "value": 12.0,
+        "label": "12.0–16.0",
+        "count": 124553,
+        "porcentaje": 16.9
+      },
+      {
+        "value": 16.0,
+        "label": "16.0–20.0",
+        "count": 127455,
+        "porcentaje": 17.3
+      },
+      {
+        "value": 20.0,
+        "label": "20.0–24.0",
+        "count": 112107,
+        "porcentaje": 15.21
+      },
+      {
+        "value": 24.0,
+        "label": "24.0–28.0",
+        "count": 86205,
+        "porcentaje": 11.7
+      },
+      {
+        "value": 28.0,
+        "label": "28.0–32.0",
+        "count": 58857,
+        "porcentaje": 7.99
+      },
+      {
+        "value": 32.0,
+        "label": "32.0–36.0",
+        "count": 34133,
+        "porcentaje": 4.63
+      },
+      {
+        "value": 36.0,
+        "label": "36.0–40.0",
+        "count": 14782,
+        "porcentaje": 2.01
+      },
+      {
+        "value": 40.0,
+        "label": "40.0–44.0",
+        "count": 20,
+        "porcentaje": 0.0
+      },
+      {
+        "value": 44.0,
+        "label": "44.0–48.0",
+        "count": 23,
+        "porcentaje": 0.0
+      },
+      {
+        "value": 48.0,
+        "label": "48.0–52.0",
+        "count": 4,
+        "porcentaje": 0.0
+      },
+      {
+        "value": 52.0,
+        "label": "52.0–56.0",
+        "count": 8,
+        "porcentaje": 0.0
+      },
+      {
+        "value": 56.0,
+        "label": "56.0–60.0",
+        "count": 5,
+        "porcentaje": 0.0
+      },
+      {
+        "value": 60.0,
+        "label": "60.0–64.0",
+        "count": 1,
+        "porcentaje": 0.0
+      }
+    ]
+  },
+  "initial_list_status": {
+    "type": "categorical",
+    "distribution": [
+      {
+        "value": "f",
+        "label": "f",
+        "count": 359477,
+        "porcentaje": 48.78
+      },
+      {
+        "value": "w",
+        "label": "w",
+        "count": 377395,
+        "porcentaje": 51.22
+      }
+    ]
+  },
+  "loan_amnt": {
+    "type": "numeric",
+    "distribution": [
+      {
+        "value": 500.0,
+        "label": "500.0–2500.0",
+        "count": 19118,
+        "porcentaje": 2.59
+      },
+      {
+        "value": 2500.0,
+        "label": "2500.0–4500.0",
+        "count": 41027,
+        "porcentaje": 5.57
+      },
+      {
+        "value": 4500.0,
+        "label": "4500.0–6500.0",
+        "count": 73968,
+        "porcentaje": 10.04
+      },
+      {
+        "value": 6500.0,
+        "label": "6500.0–8500.0",
+        "count": 66010,
+        "porcentaje": 8.96
+      },
+      {
+        "value": 8500.0,
+        "label": "8500.0–10500.0",
+        "count": 88016,
+        "porcentaje": 11.94
+      },
+      {
+        "value": 10500.0,
+        "label": "10500.0–12500.0",
+        "count": 73340,
+        "porcentaje": 9.95
+      },
+      {
+        "value": 12500.0,
+        "label": "12500.0–14500.0",
+        "count": 41571,
+        "porcentaje": 5.64
+      },
+      {
+        "value": 14500.0,
+        "label": "14500.0–16500.0",
+        "count": 73985,
+        "porcentaje": 10.04
+      },
+      {
+        "value": 16500.0,
+        "label": "16500.0–18500.0",
+        "count": 39950,
+        "porcentaje": 5.42
+      },
+      {
+        "value": 18500.0,
+        "label": "18500.0–20500.0",
+        "count": 56764,
+        "porcentaje": 7.7
+      },
+      {
+        "value": 20500.0,
+        "label": "20500.0–22500.0",
+        "count": 25006,
+        "porcentaje": 3.39
+      },
+      {
+        "value": 22500.0,
+        "label": "22500.0–24500.0",
+        "count": 30030,
+        "porcentaje": 4.08
+      },
+      {
+        "value": 24500.0,
+        "label": "24500.0–26500.0",
+        "count": 29036,
+        "porcentaje": 3.94
+      },
+      {
+        "value": 26500.0,
+        "label": "26500.0–28500.0",
+        "count": 19037,
+        "porcentaje": 2.58
+      },
+      {
+        "value": 28500.0,
+        "label": "28500.0–30500.0",
+        "count": 20184,
+        "porcentaje": 2.74
+      },
+      {
+        "value": 30500.0,
+        "label": "30500.0–32500.0",
+        "count": 5835,
+        "porcentaje": 0.79
+      },
+      {
+        "value": 32500.0,
+        "label": "32500.0–34500.0",
+        "count": 4058,
+        "porcentaje": 0.55
+      },
+      {
+        "value": 34500.0,
+        "label": "34500.0–36500.0",
+        "count": 29937,
+        "porcentaje": 4.06
+      }
+    ]
+  },
+  "grade": {
+    "type": "categorical",
+    "distribution": [
+      {
+        "value": "A",
+        "label": "A",
+        "count": 123094,
+        "porcentaje": 16.7
+      },
+      {
+        "value": "B",
+        "label": "B",
+        "count": 208317,
+        "porcentaje": 28.27
+      },
+      {
+        "value": "C",
+        "label": "C",
+        "count": 205830,
+        "porcentaje": 27.93
+      },
+      {
+        "value": "D",
+        "label": "D",
+        "count": 116682,
+        "porcentaje": 15.83
+      },
+      {
+        "value": "E",
+        "label": "E",
+        "count": 59660,
+        "porcentaje": 8.1
+      },
+      {
+        "value": "F",
+        "label": "F",
+        "count": 18873,
+        "porcentaje": 2.56
+      },
+      {
+        "value": "G",
+        "label": "G",
+        "count": 4416,
+        "porcentaje": 0.6
+      }
+    ]
+  }
+}
