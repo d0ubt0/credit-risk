@@ -26,14 +26,14 @@ const resources = [
     link: '#',
     linkLabel: 'Ver Video',
     color: '#fb4934', // Gruvbox Red
-    badge: 'YouTube',
+    badge: 'Video',
   },
   {
     icon: Code,
     title: 'Código Fuente',
     description:
       'Repositorio completo con el notebook de entrenamiento, el modelo exportado, y el código de esta aplicación web.',
-    link: '#',
+    link: 'https://github.com/d0ubt0/credit-risk',
     linkLabel: 'Ver Repositorio',
     color: '#a89984', // Gruvbox Gray
     badge: 'GitHub',

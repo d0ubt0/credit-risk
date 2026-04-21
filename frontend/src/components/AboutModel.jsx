@@ -19,12 +19,7 @@ const features = [
     description:
       'Entrenado con un dataset real de más de 32,000 registros con información demográfica, financiera y crediticia de solicitantes de préstamos.',
   },
-  {
-    icon: Target,
-    title: 'Alta Precisión',
-    description:
-      'El modelo alcanza un AUC-ROC superior a 0.85, validado con técnicas de cross-validation para asegurar generalización.',
-  },
+
   {
     icon: Cpu,
     title: 'Variables Clave',
@@ -36,13 +31,7 @@ const features = [
     title: 'Interpretabilidad',
     description:
       'Además de la predicción, el modelo ofrece explicaciones sobre qué factores influyen más en cada decisión individual.',
-  },
-  {
-    icon: Network,
-    title: 'Arquitectura',
-    description:
-      'Perceptrón multicapa (MLP) con capas de normalización, dropout para regularización, y función de activación ReLU/Sigmoid.',
-  },
+  }
 ];
 
 export default function AboutModel() {
@@ -67,7 +56,7 @@ export default function AboutModel() {
         </div>
 
         {/* Feature grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
           {features.map(({ icon: Icon, title, description }) => (
             <div
               key={title}

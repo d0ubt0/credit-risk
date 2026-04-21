@@ -64,10 +64,9 @@ export default function Hero() {
         </div>
 
         {/* Stats cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-16 animate-fade-in-up-delay-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-16 animate-fade-in-up-delay-3">
           {[
             { icon: Shield, label: 'Modelo validado', desc: 'Precisión >85%' },
-            { icon: BarChart3, label: 'Score 300-850', desc: 'Puntuación Nacional' },
             { icon: Brain, label: 'Red Neuronal', desc: 'Deep Learning' },
           ].map(({ icon: Icon, label, desc }) => (
             <div
