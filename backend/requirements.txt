@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+pandas
+scikit-learn==1.6.1
+tensorflow
+joblib
+pydantic
+dill
+python-dotenv

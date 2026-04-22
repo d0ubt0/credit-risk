@@ -33,7 +33,6 @@ const MODEL_WEIGHTS = {
   loan_amnt: { weight: 0.05, bias: 0 },
   term: { weight: 0, bias: 0 }, // Categorical
   initial_list_status: { weight: 0, bias: 0 }, // Categorical
-  grade: { weight: 0, bias: 0 }, // Categorical
 };
 
 // Importancia de cada variable (para visualización)
@@ -86,18 +85,7 @@ const INITIAL_LIST_STATUS_EFFECT = {
   f: 0.02,
 };
 
-/**
- * Grados de crédito y su efecto
- */
-const LOAN_GRADE_EFFECT = {
-  A: -0.3,
-  B: -0.15,
-  C: 0.0,
-  D: 0.1,
-  E: 0.2,
-  F: 0.3,
-  G: 0.4,
-};
+
 
 /**
  * Calcula la probabilidad de incumplimiento dado un conjunto de variables.
@@ -112,42 +100,40 @@ const LOAN_GRADE_EFFECT = {
  * @param {number} inputs.cb_person_cred_hist_length - Años de historial crediticio
  * @param {string} inputs.person_home_ownership - OWN | MORTGAGE | RENT | OTHER
  * @param {string} inputs.loan_intent - Propósito del préstamo
- * @param {string} inputs.loan_grade - Grado del crédito (A-G)
  * @param {string} inputs.cb_person_default_on_file - Y | N (historial de default)
  *
  * @returns {Object} Resultado con probabilidad, score y clasificación
  */
-export function calculateCreditRisk(inputs) {
-  // Normalizar variables numéricas
-  const normalizedLastPymnt = normalize(inputs.last_pymnt_amnt, 0, 10000);
-  const normalizedRecoveries = normalize(inputs.recoveries, 0, 5000);
-  const normalizedOutPrncp = normalize(inputs.out_prncp, 0, 20000);
-  const normalizedIntRate = normalize(inputs.int_rate, 5, 25);
-  const normalizedLateFee = normalize(inputs.total_rec_late_fee, 0, 100);
-  const normalizedCurBal = normalize(inputs.tot_cur_bal, 0, 500000);
-  const normalizedDti = normalize(inputs.dti, 0, 50);
-  const normalizedLoanAmnt = normalize(inputs.loan_amnt, 500, 40000);
+export async function calculateCreditRisk(inputs) {
+  // Construir el payload para el API
+  const payload = {
+    last_pymnt_amnt: Number(inputs.last_pymnt_amnt),
+    recoveries: Number(inputs.recoveries),
+    out_prncp: Number(inputs.out_prncp),
+    int_rate: Number(inputs.int_rate),
+    term: ` ${inputs.term}`, // Añadimos espacio al inicio (" 36 months") ya que el dataset original suele tenerlo
+    total_rec_late_fee: Number(inputs.total_rec_late_fee),
+    tot_cur_bal: Number(inputs.tot_cur_bal),
+    dti: Number(inputs.dti),
+    initial_list_status: inputs.initial_list_status,
+    loan_amnt: Number(inputs.loan_amnt)
+  };
 
-  // Calcular logit (combinación lineal ponderada)
-  let logit = -0.2; // sesgo base
+  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000";
+  const response = await fetch(`${apiUrl}/predict`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload)
+  });
 
-  // Contribuciones numéricas
-  logit += MODEL_WEIGHTS.last_pymnt_amnt.weight * normalizedLastPymnt;
-  logit += MODEL_WEIGHTS.recoveries.weight * normalizedRecoveries;
-  logit += MODEL_WEIGHTS.out_prncp.weight * normalizedOutPrncp;
-  logit += MODEL_WEIGHTS.int_rate.weight * normalizedIntRate;
-  logit += MODEL_WEIGHTS.total_rec_late_fee.weight * normalizedLateFee;
-  logit += MODEL_WEIGHTS.tot_cur_bal.weight * normalizedCurBal;
-  logit += MODEL_WEIGHTS.dti.weight * normalizedDti;
-  logit += MODEL_WEIGHTS.loan_amnt.weight * normalizedLoanAmnt;
+  if (!response.ok) {
+    throw new Error(`Error de API: ${response.status}`);
+  }
 
-  // Contribuciones categóricas
-  logit += TERM_EFFECT[inputs.term] || 0;
-  logit += INITIAL_LIST_STATUS_EFFECT[inputs.initial_list_status] || 0;
-  logit += LOAN_GRADE_EFFECT[inputs.grade] || 0;
-
-  // Convertir logit a probabilidad usando sigmoide
-  const defaultProbability = sigmoid(logit);
+  const data = await response.json();
+  const defaultProbability = data.probability_of_default;
 
   // Calcular score crediticio (300-850) - inversamente proporcional a la probabilidad
   const score = Math.round(850 - defaultProbability * 550);
@@ -245,16 +231,6 @@ function calculateContributions(inputs, totalProb) {
     direction: dtiRisk > 0.4 ? "negative" : "positive",
   });
 
-  // Grade
-  const gradeEffect = LOAN_GRADE_EFFECT[inputs.grade] || 0;
-  const gradeRisk = normalize(gradeEffect, -0.3, 0.4);
-  factors.push({
-    name: "Calificación (Grade)",
-    value: gradeRisk,
-    label: inputs.grade,
-    direction: gradeRisk > 0.5 ? "negative" : "positive",
-  });
-
   return factors.sort((a, b) => b.value - a.value);
 }
 
@@ -283,9 +259,6 @@ function generateRecommendations(inputs, riskLevel) {
     recs.push(
       "Incrementar el monto de su último pago puede mejorar la percepción de su capacidad de pago.",
     );
-  }
-  if (inputs.grade === "E" || inputs.grade === "F" || inputs.grade === "G") {
-    recs.push("Su calificación de crédito es baja. Busque asesoría para mejorar su perfil financiero.");
   }
   if (riskLevel === "low" && recs.length === 0) {
     recs.push("¡Excelente perfil! Mantenga sus buenos hábitos financieros.");

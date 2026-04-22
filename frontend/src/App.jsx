@@ -28,14 +28,19 @@ export default function App() {
    * Maneja el envío del formulario.
    * Calcula el riesgo y hace scroll al resultado.
    */
-  const handleSubmit = useCallback((inputs) => {
-    const riskResult = calculateCreditRisk(inputs);
-    setResult(riskResult);
+  const handleSubmit = useCallback(async (inputs) => {
+    try {
+      const riskResult = await calculateCreditRisk(inputs);
+      setResult(riskResult);
 
-    // Scroll suave al resultado después de que se renderice
-    setTimeout(() => {
-      resultRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 100);
+      // Scroll suave al resultado después de que se renderice
+      setTimeout(() => {
+        resultRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    } catch (error) {
+      console.error("Error al calcular el riesgo:", error);
+      alert("Hubo un error al conectar con el servidor.");
+    }
   }, []);
 
   return (
@@ -91,7 +96,6 @@ export default function App() {
                   { key: 'dti', title: 'DTI' },
                   { key: 'initial_list_status', title: 'Estado Inicial' },
                   { key: 'loan_amnt', title: 'Monto del Préstamo' },
-                  { key: 'grade', title: 'Calificación (Grade)' },
                 ].map((feat) => (
                   <PopulationChart
                     key={feat.key}

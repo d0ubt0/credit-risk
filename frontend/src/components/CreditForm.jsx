@@ -113,20 +113,6 @@ const SELECT_FIELDS = [
       { value: 'f', label: 'Fractional (F)' },
     ],
   },
-  {
-    id: 'grade',
-    label: 'Calificación (Grade)',
-    tooltip: 'Clasificación de riesgo. A es el mejor, G el más riesgoso.',
-    options: [
-      { value: 'A', label: 'A - Excelente' },
-      { value: 'B', label: 'B - Bueno' },
-      { value: 'C', label: 'C - Regular' },
-      { value: 'D', label: 'D - Bajo' },
-      { value: 'E', label: 'E - Pobre' },
-      { value: 'F', label: 'F - Muy Pobre' },
-      { value: 'G', label: 'G - Riesgoso' },
-    ],
-  },
 ];
 
 // Valores por defecto para el formulario
@@ -141,7 +127,6 @@ const DEFAULT_VALUES = {
   loan_amnt: '',
   term: '36 months',
   initial_list_status: 'w',
-  grade: 'B',
 };
 
 /**
@@ -205,7 +190,6 @@ export default function CreditForm({ onSubmit }) {
       loan_amnt: parseFloat(formData.loan_amnt),
       term: formData.term,
       initial_list_status: formData.initial_list_status,
-      grade: formData.grade,
     };
 
     // Simular latencia de red
