@@ -20,16 +20,6 @@ const resources = [
     badge: 'MD',
   },
   {
-    icon: PlayCircle,
-    title: 'Video Promocional',
-    description:
-      'Presentación en video del proyecto, demostrando las capacidades del modelo y la interfaz de usuario.',
-    link: '#',
-    linkLabel: 'Ver Video',
-    color: '#fb4934', // Gruvbox Red
-    badge: 'Video',
-  },
-  {
     icon: Code,
     title: 'Código Fuente',
     description:
@@ -63,7 +53,7 @@ export default function Resources({ onToggleDocs, showDocs }) {
         </div>
 
         {/* Resource cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {resources.map(({ id, icon: Icon, title, description, link, linkLabel, color, badge }) => (
             <a
               key={title}

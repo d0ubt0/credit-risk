@@ -17,14 +17,28 @@ import PopulationChart from './components/PopulationChart';
 import Resources from './components/Resources';
 import RiskResult from './components/RiskResult';
 import ReadmeViewer from './components/ReadmeViewer';
-import { calculateCreditRisk } from './model/creditRiskModel';
+import { calculateCreditRisk, checkServerHealth } from './model/creditRiskModel';
 import distributionData from "./population_distribution.json";
+import { useEffect } from 'react';
 
 export default function App() {
   // Estado del resultado de la evaluación
   const [result, setResult] = useState(null);
   const resultRef = useRef(null);
   const [showDocs, setShowDocs] = useState(false);
+  const [serverStatus, setServerStatus] = useState('checking'); // 'checking', 'online', 'offline'
+
+  /**
+   * Verifica el estado del servidor al cargar la aplicación.
+   * Esto también sirve para "despertar" el servidor si está en modo sleep (Render).
+   */
+  useEffect(() => {
+    const wakeupServer = async () => {
+      const isOnline = await checkServerHealth();
+      setServerStatus(isOnline ? 'online' : 'offline');
+    };
+    wakeupServer();
+  }, []);
 
   /**
    * Maneja el envío del formulario.
@@ -70,7 +84,7 @@ export default function App() {
       <Navbar onShowDocs={handleShowDocs} />
 
       {/* Hero/Landing section */}
-      <Hero />
+      <Hero serverStatus={serverStatus} />
 
       {/* Sección de evaluación: Formulario + Resultados */}
       <section id="evaluacion" className="py-24 px-4 sm:px-6">

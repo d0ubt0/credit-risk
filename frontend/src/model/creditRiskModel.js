@@ -181,6 +181,23 @@ export async function calculateCreditRisk(inputs) {
 }
 
 /**
+ * Realiza una petición de salud al servidor para despertarlo
+ * y verificar su estado.
+ */
+export async function checkServerHealth() {
+  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000";
+  try {
+    const response = await fetch(`${apiUrl}/health`);
+    if (!response.ok) return false;
+    const data = await response.json();
+    return data.status === "ok";
+  } catch (error) {
+    console.error("Error al verificar la salud del servidor:", error);
+    return false;
+  }
+}
+
+/**
  * Calcula cuánto contribuye cada variable al riesgo total
  */
 function calculateContributions(inputs, totalProb) {

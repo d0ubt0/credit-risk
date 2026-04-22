@@ -7,10 +7,35 @@
  */
 import { ArrowDown, Shield, BarChart3, Brain } from 'lucide-react';
 
-export default function Hero() {
+export default function Hero({ serverStatus }) {
   const scrollToEval = () => {
     document.getElementById('evaluacion')?.scrollIntoView({ behavior: 'smooth' });
   };
+
+  const getStatusConfig = () => {
+    switch (serverStatus) {
+      case 'online':
+        return {
+          color: 'bg-risk-low',
+          text: 'Modelo de Red Neuronal Activado',
+          textColor: 'text-brand-300'
+        };
+      case 'offline':
+        return {
+          color: 'bg-risk-high',
+          text: 'Servidor fuera de línea',
+          textColor: 'text-red-400'
+        };
+      default: // checking
+        return {
+          color: 'bg-risk-medium',
+          text: 'Activando Red Neuronal...',
+          textColor: 'text-brand-300/70'
+        };
+    }
+  };
+
+  const status = getStatusConfig();
 
   return (
     <section
@@ -27,9 +52,9 @@ export default function Hero() {
       <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 text-center">
         {/* Badge */}
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-light mb-8 animate-fade-in-up">
-          <div className="w-2 h-2 rounded-full bg-risk-low animate-pulse" />
-          <span className="text-sm font-medium text-brand-300">
-            Modelo de Red Neuronal Activo
+          <div className={`w-2 h-2 rounded-full ${status.color} animate-pulse`} />
+          <span className={`text-sm font-medium ${status.textColor}`}>
+            {status.text}
           </span>
         </div>
 
