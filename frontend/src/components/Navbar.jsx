@@ -13,9 +13,10 @@ const navLinks = [
   { id: 'evaluacion', label: 'Evaluación' },
   { id: 'acerca', label: 'Acerca del Modelo' },
   { id: 'recursos', label: 'Recursos' },
+  { id: 'documentacion', label: 'Documentación' },
 ];
 
-export default function Navbar() {
+export default function Navbar({ onShowDocs }) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('inicio');
@@ -51,6 +52,11 @@ export default function Navbar() {
   }, []);
 
   const scrollTo = (id) => {
+    if (id === 'documentacion' && onShowDocs) {
+      onShowDocs();
+      setMobileOpen(false);
+      return;
+    }
     const el = document.getElementById(id);
     if (el) el.scrollIntoView({ behavior: 'smooth' });
     setMobileOpen(false);

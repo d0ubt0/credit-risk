@@ -16,6 +16,7 @@ import Navbar from './components/Navbar';
 import PopulationChart from './components/PopulationChart';
 import Resources from './components/Resources';
 import RiskResult from './components/RiskResult';
+import ReadmeViewer from './components/ReadmeViewer';
 import { calculateCreditRisk } from './model/creditRiskModel';
 import distributionData from "./population_distribution.json";
 
@@ -23,6 +24,7 @@ export default function App() {
   // Estado del resultado de la evaluación
   const [result, setResult] = useState(null);
   const resultRef = useRef(null);
+  const [showDocs, setShowDocs] = useState(false);
 
   /**
    * Maneja el envío del formulario.
@@ -43,10 +45,29 @@ export default function App() {
     }
   }, []);
 
+  const handleToggleDocs = useCallback(() => {
+    setShowDocs((prev) => {
+      const newState = !prev;
+      if (newState) {
+        setTimeout(() => {
+          document.getElementById('documentacion')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
+      }
+      return newState;
+    });
+  }, []);
+
+  const handleShowDocs = useCallback(() => {
+    setShowDocs(true);
+    setTimeout(() => {
+      document.getElementById('documentacion')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  }, []);
+
   return (
     <div className="bg-animated min-h-screen">
       {/* Barra de navegación fija */}
-      <Navbar />
+      <Navbar onShowDocs={handleShowDocs} />
 
       {/* Hero/Landing section */}
       <Hero />
@@ -117,7 +138,10 @@ export default function App() {
       <AboutModel />
 
       {/* Recursos y enlaces */}
-      <Resources />
+      <Resources onToggleDocs={handleToggleDocs} showDocs={showDocs} />
+
+      {/* Visor del README */}
+      {showDocs && <ReadmeViewer />}
 
       {/* Pie de página */}
       <Footer />

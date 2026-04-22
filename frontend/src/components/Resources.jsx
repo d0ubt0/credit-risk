@@ -9,14 +9,15 @@ import { FileText, PlayCircle, Code, ExternalLink } from 'lucide-react';
 
 const resources = [
   {
+    id: 'docs',
     icon: FileText,
-    title: 'Reporte Técnico',
+    title: 'Documentación Técnica',
     description:
-      'Documentación completa del proyecto incluyendo análisis exploratorio, preprocesamiento, entrenamiento y evaluación del modelo.',
-    link: '#',
-    linkLabel: 'Ver Reporte',
+      'Lee el archivo README del proyecto con el detalle del flujo de trabajo, el modelo predictivo y los detalles técnicos.',
+    link: '#documentacion',
+    linkLabel: 'Ver Documentación',
     color: '#83a598', // Gruvbox Blue
-    badge: 'PDF',
+    badge: 'MD',
   },
   {
     icon: PlayCircle,
@@ -40,7 +41,7 @@ const resources = [
   },
 ];
 
-export default function Resources() {
+export default function Resources({ onToggleDocs, showDocs }) {
   return (
     <section id="recursos" className="py-24 px-4 sm:px-6">
       <div className="max-w-5xl mx-auto">
@@ -63,12 +64,18 @@ export default function Resources() {
 
         {/* Resource cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {resources.map(({ icon: Icon, title, description, link, linkLabel, color, badge }) => (
+          {resources.map(({ id, icon: Icon, title, description, link, linkLabel, color, badge }) => (
             <a
               key={title}
               href={link}
+              onClick={(e) => {
+                if (id === 'docs') {
+                  e.preventDefault();
+                  onToggleDocs();
+                }
+              }}
               className="glass rounded-2xl p-6 group hover:bg-white/5 transition-all duration-300
-                hover:border-brand-500/30 hover:translate-y-[-4px] hover:shadow-xl hover:shadow-brand-500/10 block"
+                hover:border-brand-500/30 hover:translate-y-[-4px] hover:shadow-xl hover:shadow-brand-500/10 block cursor-pointer"
             >
               <div className="flex items-center justify-between mb-4">
                 <div
@@ -95,7 +102,7 @@ export default function Resources() {
 
               <div className="flex items-center gap-1.5 text-sm font-medium text-brand-400 
                 group-hover:text-brand-300 transition-colors">
-                {linkLabel}
+                {id === 'docs' && showDocs ? 'Ocultar Documentación' : linkLabel}
                 <ExternalLink className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
               </div>
             </a>
