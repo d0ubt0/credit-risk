@@ -3,42 +3,44 @@
  * AboutModel - Sección descriptiva del proyecto
  * ============================================
  * Explica el modelo, la metodología y el dataset utilizado.
+ * Incluye visualización interactiva de la arquitectura ANN
+ * y métricas de rendimiento del modelo.
  */
-import { Brain, Database, Target, Cpu, BookOpen, Network } from 'lucide-react';
+import { Brain, Database, Cpu, BookOpen } from 'lucide-react';
+import NeuralNetworkDiagram from './NeuralNetworkDiagram';
+import ModelMetrics from './ModelMetrics';
 
 const features = [
   {
     icon: Brain,
     title: 'Red Neuronal Profunda',
     description:
-      'Modelo de deep learning con múltiples capas ocultas, entrenado para capturar relaciones no lineales complejas entre las variables financieras.',
+      'Modelo de deep learning con 3 capas ocultas (384 → 230 → 138 neuronas), entrenado para capturar relaciones no lineales complejas entre las variables financieras.',
   },
   {
     icon: Database,
     title: 'Credit Risk Dataset',
     description:
-      'Entrenado con un dataset real de más de 190,000 registros con información demográfica, financiera y crediticia de solicitantes de préstamos.',
+      'Entrenado con un dataset real de más de 738,000 registros con información demográfica, financiera y crediticia de solicitantes de préstamos.',
   },
-
   {
     icon: Cpu,
-    title: 'Variables Clave',
+    title: '10 Variables Clave',
     description:
-      'Utiliza 10 variables incluyendo el último pago, recuperaciones, capital pendiente, tasa de interés y plazo del préstamo.',
+      'Utiliza 10 variables incluyendo el último pago, cobros por recuperación, capital pendiente, tasa de interés y plazo del préstamo.',
   },
   {
     icon: BookOpen,
-    title: 'Interpretabilidad',
+    title: 'Transparencia Total',
     description:
-      'Además de la predicción, el modelo ofrece explicaciones sobre qué factores influyen más en cada decisión individual.',
-  }
+      'Además de la predicción, el modelo ofrece explicaciones sobre qué factores influyen más en cada decisión individual, métricas de rendimiento y visualización de su arquitectura.',
+  },
 ];
 
 export default function AboutModel() {
   return (
     <section id="acerca" className="py-24 px-4 sm:px-6">
       <div className="max-w-6xl mx-auto">
-        {/* Section header */}
         <div className="text-center mb-16">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass-light mb-4">
             <Brain className="w-4 h-4 text-brand-400" />
@@ -47,15 +49,15 @@ export default function AboutModel() {
             </span>
           </div>
           <h2 className="text-3xl sm:text-4xl font-black text-white mb-4">
-            ¿Cómo Funciona?
+            ¿Cómo Funciona Nuestro Modelo?
           </h2>
           <p className="text-surface-200/60 max-w-2xl mx-auto leading-relaxed">
-            Nuestro modelo de inteligencia artificial analiza múltiples variables financieras
-            para estimar la probabilidad de incumplimiento crediticio de manera precisa y confiable.
+            Nuestra inteligencia artificial analiza múltiples variables financieras
+            para estimar la probabilidad de incumplimiento crediticio. Aquí te mostramos
+            exactamente cómo funciona — sin caja negra.
           </p>
         </div>
 
-        {/* Feature grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
           {features.map(({ icon: Icon, title, description }) => (
             <div
@@ -73,34 +75,12 @@ export default function AboutModel() {
           ))}
         </div>
 
-        {/* Architecture diagram placeholder */}
-        <div className="mt-16 glass rounded-3xl p-8 text-center">
-          <h3 className="text-xl font-bold text-white mb-4">Arquitectura del Modelo</h3>
-          <div className="flex items-center justify-center gap-2 sm:gap-4 flex-wrap py-8">
-            {[
-              { label: 'Input Layer', sub: '10 features', color: '#83a598' },
-              { label: 'Dense 384', sub: 'ReLU + BN + L1', color: '#8ec07c' },
-              { label: 'Dense 230', sub: 'ReLU + Dropout', color: '#fabd2f' },
-              { label: 'Dense 138', sub: 'ReLU + BN', color: '#8ec07c' },
-              { label: 'Output', sub: 'Sigmoid', color: '#83a598' },
-            ].map((layer, i, arr) => (
-              <div key={layer.label} className="flex items-center gap-2 sm:gap-4">
-                <div
-                  className="rounded-xl px-4 py-3 text-center min-w-[90px]"
-                  style={{ backgroundColor: `${layer.color}20`, border: `1px solid ${layer.color}40` }}
-                >
-                  <p className="text-xs font-bold text-white">{layer.label}</p>
-                  <p className="text-[10px] text-surface-200/50 mt-0.5">{layer.sub}</p>
-                </div>
-                {i < arr.length - 1 && (
-                  <div className="text-brand-400/50 hidden sm:block">→</div>
-                )}
-              </div>
-            ))}
-          </div>
-          <p className="text-xs text-surface-200/40 mt-4">
-            Función de pérdida: Binary Cross-Entropy | Optimizador: Adam | Learning Rate: 0.002
-          </p>
+        <div className="mt-12 text-center">
+          <NeuralNetworkDiagram />
+        </div>
+
+        <div className="mt-12">
+          <ModelMetrics />
         </div>
       </div>
     </section>

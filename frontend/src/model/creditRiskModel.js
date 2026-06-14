@@ -38,14 +38,14 @@ const MODEL_WEIGHTS = {
 // Importancia de cada variable (para visualización)
 export const FEATURE_IMPORTANCE = [
   { name: "Último pago", key: "last_pymnt_amnt", importance: 0.356140 },
-  { name: "Recuperaciones", key: "recoveries", importance: 0.292410 },
+  { name: "Cobros por recuperación", key: "recoveries", importance: 0.292410 },
   { name: "Capital pendiente", key: "out_prncp", importance: 0.193586 },
   { name: "Tasa de interés", key: "int_rate", importance: 0.029527 },
   { name: "Plazo (60 meses)", key: "term", importance: 0.027584 },
   { name: "Cargos por mora", key: "total_rec_late_fee", importance: 0.017887 },
   { name: "Saldo actual total", key: "tot_cur_bal", importance: 0.015299 },
   { name: "Relación DTI", key: "dti", importance: 0.009023 },
-  { name: "Estado de lista inicial", key: "initial_list_status", importance: 0.008162 },
+  { name: "Tipo de registro", key: "initial_list_status", importance: 0.008162 },
   { name: "Monto del préstamo", key: "loan_amnt", importance: 0.005557 },
 ];
 
@@ -215,7 +215,7 @@ function calculateContributions(inputs, totalProb) {
   // Recuperaciones
   const recRisk = normalize(inputs.recoveries, 0, 5000);
   factors.push({
-    name: "Recuperaciones",
+    name: "Cobros por recuperación",
     value: recRisk,
     label: `$${inputs.recoveries.toLocaleString()}`,
     direction: recRisk > 0.3 ? "negative" : "positive",
@@ -269,7 +269,7 @@ function generateRecommendations(inputs, riskLevel) {
   }
   if (inputs.recoveries > 1000) {
     recs.push(
-      "El historial de recuperaciones indica riesgos previos. Mantener pagos puntuales es crucial ahora.",
+      "Los cobros por recuperación indican impagos previos. Mantener pagos puntuales es crucial para mejorar tu perfil.",
     );
   }
   if (inputs.last_pymnt_amnt < 500) {

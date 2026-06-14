@@ -129,7 +129,7 @@ export default function App() {
                   //{ key: 'total_rec_late_fee', title: 'Cargos por Mora' },
                   { key: 'tot_cur_bal', title: 'Saldo Actual Total' },
                   { key: 'dti', title: 'DTI' },
-                  { key: 'initial_list_status', title: 'Estado Inicial' },
+                  { key: 'initial_list_status', title: 'Tipo de Registro' },
                   { key: 'loan_amnt', title: 'Monto del Préstamo' },
                 ].map((feat) => (
                   <PopulationChart

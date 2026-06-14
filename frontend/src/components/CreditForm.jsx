@@ -22,12 +22,12 @@ const FIELDS = [
   },
   {
     id: 'recoveries',
-    label: 'Recuperaciones',
+    label: 'Cobros por Recuperación',
     type: 'number',
     placeholder: '0',
     min: 0,
     max: 20000,
-    tooltip: 'Monto recuperado después del incumplimiento.',
+    tooltip: 'Monto que la entidad financiera ha logrado recuperar de préstamos previos que cayeron en incumplimiento. Un valor alto sugiere historial de default y aumenta el riesgo. Si nunca has tenido un impago, este valor es 0.',
     unit: 'USD',
   },
   {
@@ -106,11 +106,11 @@ const SELECT_FIELDS = [
   },
   {
     id: 'initial_list_status',
-    label: 'Estado Listado Inicial',
-    tooltip: 'Estado inicial del préstamo en el sistema.',
+    label: 'Tipo de Registro',
+    tooltip: 'Indica si tu préstamo fue registrado como un lote completo (Registro Completo) o como fracción de un préstamo mayor (Registro Parcial). La mayoría de préstamos personales son "Registro Completo".',
     options: [
-      { value: 'w', label: 'Whole (W)' },
-      { value: 'f', label: 'Fractional (F)' },
+      { value: 'w', label: 'Registro Completo (W)' },
+      { value: 'f', label: 'Registro Parcial (F)' },
     ],
   },
 ];

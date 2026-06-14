@@ -4,14 +4,16 @@
  * ============================================
  * Compara el valor del usuario contra la distribución
  * poblacional de cualquier atributo del JSON de Python.
+ * Incluye interpretación narrativa automática.
  *
  * Props:
  *  - distributionData : objeto JSON completo generado por Python
  *  - feature          : clave del atributo a mostrar (ej: "fico_range_low", "grade")
  *  - userValue        : valor del usuario para ese atributo
  *  - getScoreCategory : función opcional (value) => { color, label }
+ *  - title            : título del gráfico
  */
-import { BarChart3 } from 'lucide-react';
+import { BarChart3, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import {
   Area,
   AreaChart,
@@ -24,8 +26,7 @@ import {
   XAxis, YAxis,
 } from 'recharts';
 
-// ── Tooltip personalizado ─────────────────────────────────────────────────────
-function CustomTooltip({ active, payload, label, isCategoric }) {
+function CustomTooltip({ active, payload, label }) {
   if (active && payload && payload.length) {
     return (
       <div className="glass rounded-xl p-3 text-sm border border-brand-500/30">
@@ -38,12 +39,6 @@ function CustomTooltip({ active, payload, label, isCategoric }) {
   return null;
 }
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
-
-/**
- * Dado el JSON de Python y una feature, devuelve los datos normalizados
- * listos para Recharts con la forma: { label, value, count, porcentaje }
- */
 function parseFeatureData(distributionData, feature) {
   const entry = distributionData?.[feature];
   if (!entry) return { type: null, data: [] };
@@ -58,23 +53,14 @@ function parseFeatureData(distributionData, feature) {
   return { type: entry.type, data };
 }
 
-/**
- * Encuentra el bucket/categoría que contiene el userValue.
- * Para numérico compara por value (inicio del bin).
- * Para categórico compara el label exacto.
- */
 function findUserBucket(data, type, userValue) {
   if (type === 'categorical') {
     return data.find((d) => String(d.label).trim() === String(userValue).trim());
   }
-  // numérico: el bucket cuyo value <= userValue y es el más cercano por abajo
   const numeric = [...data].reverse().find((d) => d.value <= userValue);
   return numeric ?? null;
 }
 
-/**
- * Calcula el percentil acumulado hasta el bucket del usuario.
- */
 function calcPercentile(data, userBucket) {
   if (!userBucket) return null;
   let below = 0;
@@ -87,13 +73,104 @@ function calcPercentile(data, userBucket) {
   return total > 0 ? Math.round((below / total) * 100) : null;
 }
 
-// ── Componente principal ──────────────────────────────────────────────────────
+function calcMean(data) {
+  if (!data || data.length === 0) return null;
+  let weightedSum = 0;
+  let totalWeight = 0;
+  for (const d of data) {
+    weightedSum += d.value * d.porcentaje;
+    totalWeight += d.porcentaje;
+  }
+  return totalWeight > 0 ? weightedSum / totalWeight : null;
+}
+
+function generateNarrative(feature, userValue, percentile, userBucket, type, data) {
+  if (userValue == null || !userBucket) return null;
+
+  const mean = type === 'numeric' ? calcMean(data) : null;
+  const featureLabels = {
+    last_pymnt_amnt: { name: 'último pago', unit: '$', higherIsBetter: true },
+    recoveries: { name: 'cobros por recuperación', unit: '$', higherIsBetter: false },
+    out_prncp: { name: 'capital pendiente', unit: '$', higherIsBetter: false },
+    int_rate: { name: 'tasa de interés', unit: '%', higherIsBetter: false },
+    term: { name: 'plazo del préstamo', unit: '', higherIsBetter: false },
+    tot_cur_bal: { name: 'saldo actual total', unit: '$', higherIsBetter: false },
+    dti: { name: 'relación deuda-ingreso', unit: '%', higherIsBetter: false },
+    initial_list_status: { name: 'tipo de registro', unit: '', higherIsBetter: true },
+    loan_amnt: { name: 'monto del préstamo', unit: '$', higherIsBetter: false },
+  };
+
+  const info = featureLabels[feature];
+  if (!info) return null;
+
+  const isAbove = percentile > 55;
+  const isBelow = percentile < 45;
+  const isAverage = !isAbove && !isBelow;
+
+  if (isAverage) {
+    return {
+      icon: Minus,
+      color: '#fabd2f',
+      text: `Tu ${info.name} se encuentra dentro del rango promedio de la población. Esto indica un perfil equilibrado en este aspecto.`,
+    };
+  }
+
+  if (type === 'numeric' && mean != null) {
+    const diff = Math.abs(((userValue - mean) / mean) * 100).toFixed(0);
+    const aboveMean = userValue > mean;
+
+    if (info.higherIsBetter) {
+      if (aboveMean) {
+        return {
+          icon: TrendingUp,
+          color: '#b8bb26',
+          text: `Tu ${info.name} es un ${diff}% superior al promedio de la población (${info.unit}${Math.round(mean).toLocaleString()}). Esto fortalece tu perfil crediticio, ya que demuestra mayor capacidad de pago.`,
+        };
+      } else {
+        return {
+          icon: TrendingDown,
+          color: '#fb4934',
+          text: `Tu ${info.name} es un ${diff}% inferior al promedio de la población (${info.unit}${Math.round(mean).toLocaleString()}). Esto puede debilitar tu perfil, ya que refleja menor actividad de pago reciente.`,
+        };
+      }
+    } else {
+      if (aboveMean) {
+        return {
+          icon: TrendingUp,
+          color: '#fb4934',
+          text: `Tu ${info.name} es un ${diff}% superior al promedio de la población (${info.unit}${Math.round(mean).toLocaleString()}), lo que incrementa el riesgo. Un valor más bajo mejoraría tu evaluación.`,
+        };
+      } else {
+        return {
+          icon: TrendingUp,
+          color: '#b8bb26',
+          text: `Tu ${info.name} es un ${diff}% inferior al promedio de la población (${info.unit}${Math.round(mean).toLocaleString()}). Esto es favorable, ya que reduce tu exposición crediticia.`,
+        };
+      }
+    }
+  }
+
+  if (isAbove) {
+    return {
+      icon: TrendingUp,
+      color: info.higherIsBetter ? '#b8bb26' : '#fb4934',
+      text: `Tu ${info.name} se encuentra por encima del ${percentile}% de la población. ${info.higherIsBetter ? 'Esto es favorable para tu perfil.' : 'Esto puede incrementar tu nivel de riesgo.'}`,
+    };
+  }
+
+  return {
+    icon: TrendingDown,
+    color: info.higherIsBetter ? '#fb4934' : '#b8bb26',
+    text: `Tu ${info.name} se encuentra por debajo del ${100 - percentile}% de la población. ${info.higherIsBetter ? 'Un valor más alto mejoraría tu evaluación.' : 'Esto es positivo para tu perfil de riesgo.'}`,
+  };
+}
+
 export default function PopulationChart({
   distributionData,
   feature,
   userValue,
-  getScoreCategory,       // opcional: (value) => { color: string, label: string }
-  title,                  // opcional: título del gráfico
+  getScoreCategory,
+  title,
 }) {
   const { type, data } = parseFeatureData(distributionData, feature);
 
@@ -109,26 +186,27 @@ export default function PopulationChart({
   const percentile  = userBucket ? calcPercentile(data, userBucket) : null;
   const category    = getScoreCategory && userValue != null ? getScoreCategory(userValue) : null;
   const accentColor = category?.color ?? '#83a598';
-
-  // Para numérico: la ReferenceLine necesita el label (string) del bin
   const userBinLabel = userBucket?.label ?? null;
+  const narrative = generateNarrative(feature, userValue, percentile, userBucket, type, data);
 
   return (
     <div className="glass rounded-3xl p-8 animate-fade-in-up-delay-3">
-      {/* ── Header ── */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
         <h3 className="text-lg font-bold text-white flex items-center gap-2">
           <BarChart3 className="w-5 h-5 text-brand-400" />
           {title ?? `Distribución: ${feature}`}
         </h3>
-
+        {percentile != null && (
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full glass-light">
+            <span className="text-xs font-semibold text-brand-300">
+              Percentil {percentile}
+            </span>
+          </div>
+        )}
       </div>
 
-      {/* ── Gráfico ── */}
       <div className="h-64 sm:h-72">
         <ResponsiveContainer width="100%" height="100%">
-
-          {/* NUMÉRICO → AreaChart */}
           {type === 'numeric' ? (
             <AreaChart data={data} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
               <defs>
@@ -179,9 +257,7 @@ export default function PopulationChart({
                 />
               )}
             </AreaChart>
-
           ) : (
-          /* CATEGÓRICO → BarChart */
             <BarChart data={data} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
               <CartesianGrid
                 strokeDasharray="3 3"
@@ -200,7 +276,7 @@ export default function PopulationChart({
                 tickLine={false}
                 tickFormatter={(v) => `${v}%`}
               />
-              <Tooltip content={<CustomTooltip isCategoric />} />
+              <Tooltip content={<CustomTooltip />} />
               <Bar dataKey="porcentaje" radius={[4, 4, 0, 0]}>
                 {data.map((entry) => (
                   <Cell
@@ -215,9 +291,18 @@ export default function PopulationChart({
               </Bar>
             </BarChart>
           )}
-
         </ResponsiveContainer>
       </div>
+
+      {narrative && (
+        <div
+          className="mt-5 flex items-start gap-3 p-4 rounded-xl"
+          style={{ backgroundColor: `${narrative.color}08`, border: `1px solid ${narrative.color}15` }}
+        >
+          <narrative.icon className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: narrative.color }} />
+          <p className="text-xs text-surface-200/70 leading-relaxed">{narrative.text}</p>
+        </div>
+      )}
     </div>
   );
 }
