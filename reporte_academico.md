@@ -5,8 +5,7 @@
 ### PORTADA
 
 **UNIVERSIDAD NACIONAL DE MEDELLÍN**  
-**FACULTAD DE INGENIERÍAS**  
-**DEPARTAMENTO DE CIENCIAS DE LA COMPUTACIÓN**
+
 
 **Curso:** Redes Neuronales y Algoritmos Bioinspirados  
 **Título del Proyecto:** Sistema de Predicción de Riesgo Crediticio basado en Redes Neuronales Profundas  
@@ -14,7 +13,7 @@
 - Sebastian Pabon Nunez  
 - Jhofred Jahat Camacho Gomez
 
-**Docente:** [Nombre del Docente]  
+**Docente:** Juan David Ospina Arango  
 **Fecha de Entrega:** Junio 2026
 
 ---
@@ -152,11 +151,31 @@ El primer paso del análisis exploratorio fue examinar las relaciones lineales e
 
 *Nota.* Mapa de calor que muestra los coeficientes de correlación de Pearson entre todas las variables numéricas del dataset. Los valores cercanos a 1 (en tonos rojos) indican correlaciones positivas fuertes, mientras que los valores cercanos a -1 (en tonos azules) indican correlaciones negativas fuertes. Los valores cercanos a 0 (en tonos blancos) sugieren ausencia de correlación lineal.
 
-La observación de la matriz de correlación de Pearson revela varios patrones interesantes. En primer lugar, se identifican grupos de variables que están fuertemente correlacionadas entre sí, lo que indica que aportan información redundante al modelo. Por ejemplo, variables relacionadas con el monto total del préstamo (`loan_amnt`, `funded_amnt`, `total_pymnt`) presentan correlaciones elevadas, lo que sugiere que no es necesario incluir todas ellas en el modelo final.
+La observación de la matriz de correlación de Pearson revela varios patrones de alta relevancia. En primer lugar, se identifican tres grupos de variables con correlaciones extremadamente altas (superiores a 0.9), lo que indica una redundancia significativa en la información que aportan:
 
-En segundo lugar, se observan correlaciones moderadas entre variables financieras clave y el estado del préstamo. La tasa de interés (`int_rate`) muestra una correlación positiva con variables asociadas al riesgo, como el plazo del préstamo y el monto solicitado. Esto tiene sentido desde una perspectiva financiera: los préstamos con mayor riesgo suelen tener tasas de interés más altas para compensar el mayor nivel de incertidumbre.
+**Grupo 1 — Monto del préstamo:** Las variables `loan_amnt`, `funded_amnt` y `funded_amnt_inv` presentan correlaciones prácticamente perfectas entre sí (`loan_amnt` ↔ `funded_amnt` = 1.00; `loan_amnt` ↔ `funded_amnt_inv` = 0.99; `funded_amnt` ↔ `funded_amnt_inv` = 0.99). Esto indica que las tres variables contienen esencialmente la misma información, por lo que incluir más de una de ellas en el modelo sería redundante.
+
+**Grupo 2 — Pagos totales:** Las variables `total_pymnt`, `total_pymnt_inv` y `total_rec_prncp` también muestran correlaciones extremadamente altas (`total_pymnt` ↔ `total_pymnt_inv` = 0.99; `total_pymnt` ↔ `total_rec_prncp` = 0.97; `total_pymnt_inv` ↔ `total_rec_prncp` = 0.97). Esta fuerte redundancia sugiere que estas variables miden aspectos prácticamente idénticos del comportamiento de pago.
+
+**Grupo 3 — Capital pendiente:** Las variables `out_prncp` y `out_prncp_inv` presentan una correlación perfecta de 1.00, lo que confirma que son versiones duplicadas de la misma información.
+
+En segundo lugar, se observan correlaciones moderadas entre variables financieras clave y el estado del préstamo (`loan_status`). Las variables más relacionadas con el estado del préstamo según Pearson son:
+
+| Variable | Correlación Pearson |
+|----------|-------------------|
+| total_rec_prncp | -0.49 |
+| last_pymnt_amnt | -0.41 |
+| total_pymnt | -0.38 |
+| recoveries | 0.39 |
+| out_prncp | 0.35 |
+
+Estos valores revelan patrones financieramente interpretables: un mayor total de pagos realizados (`total_rec_prncp`, `total_pymnt`) y un último pago más alto (`last_pymnt_amnt`) se asocian negativamente con el incumplimiento, es decir, están relacionados con préstamos saludables. Por el contrario, mayores recuperaciones (`recoveries`) y un capital pendiente más elevado (`out_prncp`) se asocian positivamente con estados de incumplimiento.
+
+En tercer lugar, la tasa de interés (`int_rate`) muestra una correlación positiva con variables asociadas al riesgo, como el plazo del préstamo y el monto solicitado. Esto tiene sentido desde una perspectiva financiera: los préstamos con mayor riesgo suelen tener tasas de interés más altas para compensar el mayor nivel de incertidumbre.
 
 La relación deuda-ingresos (`dti`) también presenta correlaciones interesantes con otras variables financieras. Una DTI alta indica que una proporción significativa de los ingresos del prestatario se destina al pago de deudas, lo que puede ser un indicador de estrés financiero y mayor probabilidad de incumplimiento.
+
+El hallazgo más importante de este análisis es la evidencia clara de multicolinealidad entre los grupos de variables identificados. Variables como `funded_amnt`, `funded_amnt_inv` y `loan_amnt`, o como `total_pymnt`, `total_pymnt_inv` y `total_rec_prncp`, deberían evaluarse para eliminación o reducción dimensional, ya que su inclusión simultánea en un modelo puede causar inestabilidad en las estimaciones y dificultar la interpretación de los coeficientes. Esta constatación fundamenta la decisión metodológica de eliminar variables redundantes descrita en la sección de preparación de datos.
 
 Sin embargo, la correlación de Pearson tiene una limitación importante: solo captura relaciones lineales. En la práctica, las relaciones entre variables financieras pueden ser más complejas y no lineales. Por esta razón, fue necesario complementar el análisis con una medida de correlación que pudiera capturar este tipo de relaciones.
 
@@ -171,11 +190,37 @@ Para capturar relaciones no lineales entre las variables, se calculó la matriz 
 
 *Nota.* Mapa de calor que muestra los coeficientes de correlación de Spearman entre todas las variables numéricas del dataset. Esta medida captura relaciones monótonas, incluyendo aquellas que no son estrictamente lineales, proporcionando una visión más completa de las asociaciones entre variables.
 
-La comparación entre las matrices de Pearson y Spearman revela diferencias significativas en algunos casos. Mientras que la correlación de Pearson puede subestimar la fuerza de ciertas relaciones no lineales, la correlación de Spearman captura estas asociaciones de manera más efectiva. Esto es particularmente relevante en el contexto financiero, donde las relaciones entre variables como ingresos, monto del préstamo, y probabilidad de incumplimiento no siempre siguen patrones lineales.
+El análisis de Spearman proporciona hallazgos de mayor profundidad que el análisis de Pearson, particularmente en lo que respecta a la relación entre las variables explicativas y el estado del préstamo. Las variables más relacionadas con `loan_status` según el coeficiente de Spearman son:
 
-Por ejemplo, la relación entre ingresos y probabilidad de incumplimiento puede no ser lineal: los prestatarios con ingresos muy bajos tienen mayor probabilidad de incumplir, pero aquellos con ingresos extremadamente altos también pueden presentar riesgos específicos (por ejemplo, si tienen niveles de deuda proporcionalmente altos). La correlación de Spearman es capaz de capturar este tipo de relaciones complejas, proporcionando una visión más matizada de las asociaciones entre variables.
+| Variable | Correlación Spearman |
+|----------|---------------------|
+| recoveries | 0.60 |
+| last_pymnt_amnt | -0.52 |
+| out_prncp | 0.42 |
+| int_rate | 0.25 |
+| total_rec_late_fee | 0.19 |
 
-El análisis de Spearman también confirma la presencia de grupos de variables altamente correlacionadas, reforzando la decisión de eliminar variables redundantes para evitar problemas de multicolinealidad. Además, revela asociaciones que no eran evidentes en el análisis de Pearson, lo que enriquece la comprensión del comportamiento de los datos y aporta información valiosa para la selección de variables.
+Estos valores revelan que `recoveries` (0.60) es la variable más asociada al estado del préstamo bajo esta medida, superando incluso a `last_pymnt_amnt` (-0.52). Cuando existen recuperaciones de deuda, estas suelen estar relacionadas con préstamos problemáticos o incumplidos, lo que convierte a esta variable en un indicador fuerte de deterioro crediticio. Por su parte, `last_pymnt_amnt` presenta una relación negativa fuerte: pagos finales altos suelen indicar préstamos saludables, mientras que pagos finales bajos se asocian a préstamos en mora o incumplimiento.
+
+El capital pendiente (`out_prncp`, 0.42) también muestra una asociación moderada-fuerte, indicando que saldos pendientes elevados están relacionados con estados de mayor riesgo. La tasa de interés (`int_rate`, 0.25) y los cargos por mora (`total_rec_late_fee`, 0.19) completan el grupo de variables con mayor poder discriminante.
+
+En cuanto a las correlaciones entre variables explicativas, las más relevantes son:
+
+| Variables | Correlación Spearman |
+|-----------|---------------------|
+| annual_inc ↔ tot_cur_bal | 0.52 |
+| loan_amnt ↔ annual_inc | 0.48 |
+| loan_amnt ↔ revol_bal | 0.46 |
+| loan_amnt ↔ last_pymnt_amnt | 0.46 |
+| revol_bal ↔ revol_util | 0.42 |
+
+Estas correlaciones revelan patrones financieramente interpretables: las personas con mayores ingresos tienden a tener mayores saldos totales; los préstamos más grandes suelen otorgarse a personas con ingresos más altos; y los usuarios con balances rotativos altos presentan mayor utilización del crédito.
+
+Un hallazgo particularmente importante del análisis de Spearman es que no se observan correlaciones extremadamente altas (superiores a 0.8) entre las variables explicativas seleccionadas, lo que indica que no existe una multicolinealidad severa en el conjunto final de variables. Esto es positivo tanto para modelos lineales como para redes neuronales, ya que garantiza que cada variable aporta información relativamente independiente al modelo.
+
+La comparación entre las matrices de Pearson y Spearman revela diferencias significativas. Mientras que Pearson mostraba correlaciones perfectas entre variables redundantes (como `loan_amnt` ↔ `funded_amnt` = 1.00), Spearman proporciona una visión más matizada de las asociaciones una vez eliminadas las variables redundantes. Además, Spearman captura con mayor fuerza la relación entre `recoveries` y `loan_status` (0.60 frente a 0.39 de Pearson), lo que sugiere que esta relación tiene un componente no lineal que Pearson no logra capturar completamente.
+
+El análisis de Spearman también revela asociaciones que no eran evidentes en el análisis de Pearson, como la relación entre ingresos anuales y saldo total corriente (0.52), lo que enriquece la comprensión del comportamiento de los datos y aporta información valiosa para la selección de variables.
 
 #### 4.3. Identificación de Variables Clave: Análisis de Importancia
 
@@ -190,13 +235,25 @@ El Random Forest es una herramienta útil para este propósito porque puede capt
 
 *Nota.* Gráfico de barras que muestra las 20 variables con mayor importancia según el modelo Random Forest. La importancia se calcula como la reducción promedio en la impureza de los nodos del árbol cuando se utiliza la variable para dividir los datos. Valores más altos indican mayor contribución a la capacidad predictiva del modelo.
 
-Los resultados del análisis de importancia revelan que las variables más influyentes para la predicción del riesgo de incumplimiento se concentran en tres bloques principales:
+Los resultados del análisis de importancia revelan una concentración notable del poder predictivo en un grupo reducido de variables. Las tres variables más importantes acumulan aproximadamente el 84% de toda la importancia del modelo:
+
+| Variable | Importancia |
+|----------|------------|
+| last_pymnt_amnt | 0.36 |
+| recoveries | 0.29 |
+| out_prncp | 0.19 |
+
+Esta concentración es significativa: indica que menos de tres variables son responsables de la gran mayoría de la capacidad discriminativa del modelo, lo que refuerza la hipótesis de que el comportamiento de pago reciente y la exposición financiera remanente son los principales indicadores del riesgo de incumplimiento.
+
+Los resultados se organizan en tres bloques principales:
 
 **Comportamiento de pago reciente:** Las variables `last_pymnt_amnt` (último pago recibido), `recoveries` (recuperaciones post-incumplimiento), y `total_rec_late_fee` (total de cargos por mora) ocupan los primeros lugares en importancia. Esto tiene sentido desde una perspectiva financiera: el comportamiento de pago reciente es un indicador fuerte del estado financiero del prestatario. Un último pago bajo o nulo, combinado con recuperaciones y cargos por mora elevados, sugiere que el prestatario está experimentando dificultades para cumplir con sus obligaciones.
 
 **Exposición financiera remanente:** Las variables `out_prncp` (capital pendiente), `tot_cur_bal` (saldo total actual), y `loan_amnt` (monto del préstamo) también figuran entre las más importantes. Estas variables reflejan el nivel de exposición financiera del prestatario: cuánto dinero debe todavía y cuál es el tamaño original del préstamo. Un capital pendiente alto puede indicar que el prestatario está al inicio del plazo del préstamo, cuando el riesgo de incumplimiento suele ser mayor, o que tiene dificultades para reducir el saldo.
 
 **Severidad estructural del crédito:** Las variables `int_rate` (tasa de interés), `term` (plazo del préstamo), y `dti` (relación deuda-ingresos) completan el grupo de variables más influyentes. La tasa de interés es un indicador del riesgo percibido por el prestamista en el momento de la originación: tasas más altas suelen asociarse con prestatarios de mayor riesgo. El plazo del préstamo también es relevante: préstamos a más largo plazo pueden presentar mayor incertidumbre y, por tanto, mayor riesgo de incumplimiento. Finalmente, la DTI refleja la carga financiera del prestatario: una DTI alta indica que una proporción significativa de los ingresos se destina al pago de deudas, lo que puede comprometer la capacidad de cumplir con nuevas obligaciones.
+
+Un segundo nivel de importancia lo conforman variables como `int_rate`, `term_60 months`, `total_rec_late_fee` y `tot_cur_bal`, que aportan información útil pero muy inferior a las tres principales. Por último, variables como `annual_inc`, `revol_util`, `revol_bal` y las categorías de calificación crediticia (`grade_B`, `grade_C`, `grade_D`, `grade_E`, `grade_F`) muestran una contribución marginal, lo que sugiere que las características estructurales del perfil del prestatario tienen un poder discriminante limitado en comparación con las variables de comportamiento de pago y exposición financiera.
 
 #### 4.4. Narrativa Analítica: ¿Qué Distingue a los Clientes con Mayor Riesgo?
 
@@ -253,7 +310,21 @@ El análisis SHAP se realizó sobre la mejor red neuronal entrenada, utilizando 
 
 *Nota.* El summary plot de SHAP muestra la distribución del impacto de cada variable sobre las predicciones del modelo. Cada punto representa una observación individual, y su posición en el eje horizontal indica cuánto contribuyó esa variable a la predicción (valores positivos aumentan la probabilidad de incumplimiento, valores negativos la disminuyen). El color indica el valor de la variable: rojo para valores altos, azul para valores bajos.
 
-El summary plot permite identificar patrones globales sobre cómo cada variable influye en las predicciones. Por ejemplo, si los puntos rojos de una variable se concentran en el lado positivo del eje horizontal, significa que valores altos de esa variable tienden a aumentar la probabilidad de incumplimiento. Por el contrario, si los puntos azules se concentran en el lado positivo, significa que valores bajos de esa variable aumentan la probabilidad de incumplimiento.
+El summary plot permite identificar patrones globales sobre cómo cada variable influye en las predicciones. El análisis detallado de esta visualización revela los siguientes hallazgos:
+
+**1. `num__last_pymnt_amnt` (último pago recibido):** Es claramente la variable más importante del modelo. Se observa que los valores bajos (azul) generan impactos positivos grandes sobre la predicción, mientras que los valores altos (rojo) generan impactos negativos. Esto significa que los clientes que realizan pagos finales altos tienen menor riesgo de incumplimiento, mientras que aquellos con pagos finales bajos presentan un riesgo significativamente mayor. La dispersión vertical de los puntos indica que el efecto de esta variable es consistente en toda la población.
+
+**2. `num__recoveries` (recuperaciones):** Esta variable muestra un impacto muy elevado. Los valores altos de recuperaciones producen contribuciones SHAP positivas muy grandes, desplazando fuertemente la predicción hacia la clase de incumplimiento. La existencia de recuperaciones de deuda es, por tanto, un indicador fuerte de que el préstamo ya ha experimentado problemas de pago, lo que naturalmente aumenta la probabilidad de clasificación como incumplido.
+
+**3. `num__out_prncp` (capital pendiente):** Los valores altos de capital pendiente desplazan la predicción hacia la clase de incumplimiento. Un saldo pendiente elevado puede indicar que el prestatario está al inicio del plazo del préstamo o que tiene dificultades para reducir el saldo, ambas situaciones asociadas con mayor riesgo crediticio.
+
+**4. `num__loan_amnt` (monto del préstamo):** Esta variable muestra una influencia moderada. Los préstamos de mayor monto afectan la predicción, pero en menor medida que las tres variables anteriores. El efecto es interpretable: préstamos más grandes pueden representar mayor exposición y, por tanto, mayor riesgo.
+
+**5. `num__int_rate` (tasa de interés):** La tasa de interés tiene un efecto relevante. Tasas más altas se asocian con mayor probabilidad de incumplimiento, lo que es consistente con la práctica financiera de asignar tasas más altas a prestatarios percibidos como más riesgosos.
+
+**6. `cat__term` (plazo del préstamo):** Los plazos largos (60 meses) generan impactos positivos, lo que indica que los préstamos con plazos más extensos presentan mayor incertidumbre y riesgo de incumplimiento.
+
+Las variables `total_rec_late_fee`, `dti` y `tot_cur_bal` muestran contribuciones existentes pero considerablemente menores, lo que confirma que su poder discriminante es secundario frente a las variables principales.
 
 **Figura 5**  
 *SHAP Bar Plot de la Mejor Red Neuronal*
@@ -262,7 +333,19 @@ El summary plot permite identificar patrones globales sobre cómo cada variable 
 
 *Nota.* El bar plot de SHAP ordena las variables según su importancia global, calculada como el promedio de los valores absolutos de las contribuciones SHAP. Esta visualización proporciona un ranking claro de qué variables tienen mayor impacto en las predicciones del modelo.
 
-El análisis SHAP confirma y refina los hallazgos del análisis exploratorio. Las variables más influyentes según SHAP son consistentes con las identificadas en el análisis de importancia de Random Forest, lo que fortalece la validez de los hallazgos. Sin embargo, SHAP aporta información adicional al mostrar no solo qué variables son importantes, sino también cómo influyen en las predicciones.
+El análisis SHAP del bar plot cuantifica la importancia global de cada variable. Los valores medios absolutos de SHAP revelan una jerarquía clara:
+
+| Variable | Importancia SHAP (media \|SHAP\|) |
+|----------|----------------------------------|
+| last_pymnt_amnt | 0.20 |
+| recoveries | 0.07 |
+| out_prncp | 0.05 |
+| loan_amnt | 0.02 |
+| int_rate | 0.015 |
+
+Estos valores confirman que existe una diferencia abismal entre la primera variable y el resto: `last_pymnt_amnt` tiene una importancia aproximadamente tres veces mayor que `recoveries` y cuatro veces mayor que `out_prncp`. Esto indica que el modelo depende fuertemente del último pago recibido para generar sus predicciones.
+
+El análisis SHAP confirma y refina los hallazgos del análisis exploratorio. Las variables más influyentes según SHAP son consistentes con las identificadas en el análisis de importancia de Random Forest (sección 4.3), lo que fortalece la validez de los hallazgos al obtener resultados convergentes desde dos metodologías independientes. Sin embargo, SHAP aporta información adicional al mostrar no solo qué variables son importantes, sino también la dirección y magnitud de su influencia en cada predicción individual.
 
 Los resultados de SHAP revelan que `last_pymnt_amnt` (último pago recibido) es la variable con mayor impacto en las predicciones. Cuando el último pago es bajo, la contribución SHAP es positiva, lo que aumenta la probabilidad de incumplimiento. Cuando el último pago es alto, la contribución es negativa, lo que disminuye la probabilidad de incumplimiento. Este patrón es consistente con la intuición financiera: el comportamiento de pago reciente es un indicador fuerte del estado financiero del prestatario.
 
@@ -273,6 +356,14 @@ Los resultados de SHAP revelan que `last_pymnt_amnt` (último pago recibido) es 
 `int_rate` (tasa de interés) muestra un patrón interesante: tasas de interés más altas están asociadas con mayor probabilidad de incumplimiento, lo que es consistente con la práctica financiera de asignar tasas más altas a prestatarios percibidos como más riesgosos.
 
 El valor de SHAP radica en que no solo proporciona una explicación global del modelo, sino que también permite explicar predicciones individuales. Esto significa que, para cada solicitud de préstamo evaluada por el sistema, es posible generar un reporte detallado que explique qué factores influyeron más en la decisión y en qué dirección. Esta transparencia es fundamental para la adopción del sistema en un entorno financiero real, donde las decisiones deben ser justificables y auditables.
+
+#### 5.1. Consideración sobre Posible Fuga de Información (*Data Leakage*)
+
+El análisis SHAP revela un hallazgo que merece una discusión crítica: la dominancia casi absoluta de variables como `last_pymnt_amnt`, `recoveries` y `out_prncp` en las predicciones del modelo plantea la posibilidad de fuga de información (*data leakage*). Estas variables suelen conocerse únicamente después de que el préstamo ya ha evolucionado en el tiempo —es decir, después de que el prestatario ha realizado (o dejado de realizar) pagos, después de que se han generado recuperaciones, o después de que el capital pendiente ha sido calculado en un punto específico del ciclo de vida del préstamo.
+
+Si el objetivo del modelo fuera predecir el riesgo crediticio en el momento de la solicitud (antes de otorgar el crédito), la inclusión de estas variables introduciría información futura que no estaría disponible en ese escenario, lo que invalidaría las predicciones para su uso en originación. Sin embargo, como se discutió en la sección 3.2, el modelo fue diseñado explícitamente para tareas de monitoreo de cartera y cobranza temprana, donde estas variables sí están disponibles una vez que el préstamo ha sido desembolsado y ha transcurrido un período de observación.
+
+Desde esta perspectiva, la dominancia de estas variables en el análisis SHAP no constituye un defecto del modelo, sino una confirmación de que el sistema captura efectivamente las señales de deterioro crediticio que se manifiestan durante la vida del préstamo. No obstante, es fundamental que los usuarios del sistema comprendan esta limitación: el modelo es adecuado para evaluar el riesgo de préstamos ya originados, pero no para evaluar solicitudes nuevas donde estas variables no están disponibles.
 
 ---
 
