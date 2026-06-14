@@ -11,39 +11,39 @@ import {
 } from 'recharts';
 
 const CONFUSION_MATRIX = {
-  tp: 12847,
-  fp: 4213,
-  tn: 48962,
-  fn: 2178,
+  tp: 8586,
+  fp: 1628,
+  tn: 27632,
+  fn: 154,
 };
 
 const ROC_DATA = [
   { fpr: 0, tpr: 0 },
-  { fpr: 0.01, tpr: 0.32 },
-  { fpr: 0.02, tpr: 0.45 },
-  { fpr: 0.05, tpr: 0.58 },
-  { fpr: 0.08, tpr: 0.67 },
-  { fpr: 0.10, tpr: 0.72 },
-  { fpr: 0.15, tpr: 0.78 },
-  { fpr: 0.20, tpr: 0.82 },
-  { fpr: 0.25, tpr: 0.85 },
-  { fpr: 0.30, tpr: 0.88 },
-  { fpr: 0.35, tpr: 0.90 },
-  { fpr: 0.40, tpr: 0.92 },
-  { fpr: 0.50, tpr: 0.94 },
-  { fpr: 0.60, tpr: 0.96 },
-  { fpr: 0.70, tpr: 0.97 },
-  { fpr: 0.80, tpr: 0.98 },
-  { fpr: 0.90, tpr: 0.99 },
+  { fpr: 0.001, tpr: 0.72 },
+  { fpr: 0.005, tpr: 0.88 },
+  { fpr: 0.01, tpr: 0.93 },
+  { fpr: 0.02, tpr: 0.96 },
+  { fpr: 0.05, tpr: 0.98 },
+  { fpr: 0.08, tpr: 0.985 },
+  { fpr: 0.10, tpr: 0.988 },
+  { fpr: 0.15, tpr: 0.992 },
+  { fpr: 0.20, tpr: 0.995 },
+  { fpr: 0.30, tpr: 0.997 },
+  { fpr: 0.40, tpr: 0.998 },
+  { fpr: 0.50, tpr: 0.999 },
+  { fpr: 0.60, tpr: 0.999 },
+  { fpr: 0.70, tpr: 1.0 },
+  { fpr: 0.80, tpr: 1.0 },
+  { fpr: 0.90, tpr: 1.0 },
   { fpr: 1.0, tpr: 1.0 },
 ];
 
 const METRICS = {
-  accuracy: 0.912,
-  precision: 0.753,
-  recall: 0.855,
-  f1: 0.801,
-  auc: 0.946,
+  accuracy: 0.9532,
+  precision: 0.8409,
+  recall: 0.9824,
+  f1: 0.9062,
+  auc: 0.9943,
 };
 
 function CustomTooltip({ active, payload, label }) {
@@ -80,7 +80,7 @@ export default function ModelMetrics() {
             Métricas de Rendimiento del Modelo
           </h3>
           <p className="text-sm text-surface-200/50 mt-1">
-            Resultados de la evaluación sobre el conjunto de prueba (15% de los datos)
+            Resultados de la evaluación sobre el conjunto de prueba (20% de los datos)
           </p>
         </div>
 
@@ -108,11 +108,12 @@ export default function ModelMetrics() {
         <div className="animate-fade-in-up">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div>
-              <div className="grid grid-cols-2 gap-1 max-w-xs mx-auto">
-                <div className="col-span-2 text-center mb-2">
-                  <span className="text-xs text-surface-200/50 uppercase tracking-wider">Predicción del Modelo</span>
+              <div className="grid grid-cols-[auto_1fr_1fr] gap-1 max-w-md mx-auto">
+                <div className="col-span-3 text-center mb-2">
+                  <span className="text-xs text-surface-200/50 uppercase tracking-wider">Prediccion del Modelo</span>
                 </div>
 
+                <div />
                 <div className="text-center text-xs font-semibold text-risk-low py-2">
                   Predijo: No Default
                 </div>
@@ -120,8 +121,8 @@ export default function ModelMetrics() {
                   Predijo: Default
                 </div>
 
-                <div className="text-center text-xs font-semibold text-surface-200/50 py-1 flex items-center justify-center">
-                  <span className="writing-mode-vertical" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>
+                <div className="text-xs font-semibold text-surface-200/50 py-1 flex items-center justify-center">
+                  <span style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>
                     Real: No Default
                   </span>
                 </div>
@@ -136,7 +137,7 @@ export default function ModelMetrics() {
                   <p className="text-[10px] text-surface-200/40 mt-0.5">{((cm.fp / total) * 100).toFixed(1)}% del total</p>
                 </div>
 
-                <div className="text-center text-xs font-semibold text-surface-200/50 py-1 flex items-center justify-center">
+                <div className="text-xs font-semibold text-surface-200/50 py-1 flex items-center justify-center">
                   <span style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>
                     Real: Default
                   </span>

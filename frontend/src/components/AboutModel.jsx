@@ -21,7 +21,7 @@ const features = [
     icon: Database,
     title: 'Credit Risk Dataset',
     description:
-      'Entrenado con un dataset real de más de 738,000 registros con información demográfica, financiera y crediticia de solicitantes de préstamos.',
+      'Entrenado con el dataset LendingClub Loan Data que contiene 887,379 registros con información demográfica, financiera y crediticia de solicitantes de préstamos (2007-2015). Tras la limpieza y recodificación, se utilizaron aproximadamente 190,000 registros.',
   },
   {
     icon: Cpu,

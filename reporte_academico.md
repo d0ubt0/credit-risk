@@ -1,4 +1,4 @@
-# Predicción de Riesgo Crediticio mediante Redes Neuronales Artificiales: Un Enfoque Analítico para la Toma de Decisiones Financieras
+# Predicción de Riesgo Crediticio mediante Redes Neuronales Profundas: Un Enfoque Analítico para la Toma de Decisiones Financieras
 
 ---
 
@@ -78,7 +78,7 @@ El desarrollo del sistema de predicción de riesgo crediticio siguió una metodo
 
 #### 3.1. Preparación de los Datos
 
-El punto de partida del proyecto fue el conjunto de datos *Credit Risk Dataset*, disponible en Kaggle, que contiene información sobre préstamos otorgados a través de la plataforma LendingClub. Este dataset incluye más de 268,000 registros con 74 variables diferentes, abarcando información demográfica, financiera y crediticia de los solicitantes, así como detalles sobre los préstamos y su estado final (Kaggle, s.f.).
+El punto de partida del proyecto fue el conjunto de datos *LendingClub Loan Data*, que contiene información sobre préstamos otorgados a través de la plataforma LendingClub entre 2007 y 2015. Este dataset incluye 887,379 registros con 74 variables diferentes, abarcando información demográfica, financiera y crediticia de los solicitantes, así como detalles sobre los préstamos y su estado final.
 
 La primera tarea consistió en comprender la estructura de los datos y definir la variable objetivo. En este caso, la variable a predecir es `loan_status`, que indica si un préstamo fue cumplido (*Fully Paid*) o incumplido (*Charged Off*, *Default*, o *Late*). Dado que el dataset original contiene múltiples categorías intermedias y estados ambiguos —como *Current*, *In Grace Period*, o *Late (16-30 days)*—, fue necesario realizar una recodificación cuidadosa para convertir el problema en una clasificación binaria clara: clase 0 para préstamos cumplidos y clase 1 para préstamos incumplidos. Los registros con estados ambiguos fueron excluidos del análisis para evitar ambigüedades en el entrenamiento del modelo.
 
@@ -118,19 +118,15 @@ La arquitectura de la red neuronal fue optimizada mediante una búsqueda aleator
 
 La mejor configuración encontrada fue la siguiente: 3 capas ocultas con 384, 230 y 138 neuronas respectivamente, regularización L1 con intensidad 1e-05, tasa de aprendizaje de 0.002, dropout de 0.5, normalización por lotes activada, y un factor de reducción de 0.6 para el tamaño de las capas sucesivas. Esta arquitectura permite que el modelo capture relaciones complejas mientras se protege contra el sobreajuste mediante la regularización y el dropout.
 
-El modelo fue entrenado utilizando el optimizador Adam, que es ampliamente reconocido por su eficiencia y capacidad de convergencia. La función de pérdida utilizada fue *Binary Cross-Entropy* con suavizado de etiquetas de 0.03, una técnica que ayuda a mejorar la generalización del modelo. Durante el entrenamiento, se implementaron mecanismos de detención temprana y reducción de la tasa de aprendizaje para evitar el sobreajuste y asegurar la convergencia óptima.
+El modelo fue entrenado utilizando el optimizador Adam, que es ampliamente reconocido por su eficiencia y capacidad de convergencia. La función de pérdida utilizada fue *Binary Cross-Entropy* con suavizado de etiquetas (*label smoothing*) de 0.03. Este valor fue seleccionado mediante búsqueda aleatoria dentro del espacio {0.0, 0.01, 0.03, 0.05}, y tiene como propósito evitar que el modelo genere predicciones excesivamente confiadas (cercanas a 0 o 1), lo cual mejora la generalización y reduce el sobreajuste a las etiquetas de entrenamiento (Szegedy et al., 2016). Durante el entrenamiento, se implementaron mecanismos de detención temprana y reducción de la tasa de aprendizaje para evitar el sobreajuste y asegurar la convergencia óptima.
 
 Un aspecto importante del entrenamiento fue el ajuste del umbral de decisión. Por defecto, los modelos de clasificación utilizan un umbral de 0.5 para decidir si una predicción se clasifica como clase 0 o clase 1. Sin embargo, en el contexto de riesgo crediticio, puede ser más importante detectar la mayor cantidad posible de casos de incumplimiento, incluso si esto implica aceptar más falsos positivos. Por esta razón, el umbral se optimizó maximizando el F2-score, una métrica que pondera más el recall (sensibilidad) que la precisión. El umbral óptimo encontrado fue de 0.54933, lo que refleja una política de detección sensible orientada a identificar la mayor cantidad posible de casos riesgosos.
 
-#### 3.5. Evaluación de Resultados
+Para garantizar la reproducibilidad de los resultados, se fijó una semilla aleatoria global de 42, aplicada consistentemente en la división de datos, la inicialización de pesos del modelo, la búsqueda de hiperparámetros y todos los componentes estocásticos del pipeline. El modelo fue implementado utilizando TensorFlow 2.21.0 con Keras, y el entrenamiento se ejecutó en un entorno Google Colab con acelerador GPU T4. La semilla también se propagó a las variables de entorno (`PYTHONHASHSEED`), a los módulos `random` y `numpy`, y al generador de TensorFlow mediante `tf.random.set_seed`.
 
-La evaluación del modelo se realizó comparando su desempeño contra una línea base de regresión logística, un modelo clásico ampliamente utilizado en problemas de clasificación binaria. Esta comparación permite contextualizar los resultados y determinar si la complejidad adicional de la red neuronal se traduce en una mejora tangible del desempeño.
+#### 3.5. Criterios de Evaluación
 
-Las métricas principales utilizadas para la evaluación fueron el PR-AUC (Área Bajo la Curva Precision-Recall), el ROC-AUC (Área Bajo la Curva ROC), la precisión, el recall, y el F1-score. El PR-AUC es particularmente relevante cuando se trabaja con clases desbalanceadas, ya que se enfoca en el desempeño del modelo sobre la clase minoritaria. El ROC-AUC, por su parte, proporciona una visión más general del desempeño del modelo en todos los umbrales de decisión posibles.
-
-Los resultados mostraron que la red neuronal supera a la regresión logística en todas las métricas evaluadas. En términos de PR-AUC, la RNA alcanzó un valor de 0.9827 en el conjunto de prueba, frente a 0.9603 de la regresión logística. En cuanto al recall para la clase de incumplimiento, la RNA logró un valor de 0.9827, lo que significa que es capaz de detectar correctamente el 98.27% de los casos de incumplimiento, mientras que la regresión logística alcanzó un recall de 0.9634.
-
-Estos resultados demuestran que la red neuronal no solo es más precisa en términos generales, sino que también es superior en la detección de casos de incumplimiento, que es el objetivo principal del sistema. La combinación de un PR-AUC elevado y un recall alto sobre la clase de incumplimiento hace que este modelo sea especialmente valioso para tareas de monitoreo de cartera y priorización de acciones de cobranza.
+La evaluación del modelo se realizó comparando su desempeño contra una línea base de regresión logística, utilizando métricas tales como PR-AUC, ROC-AUC, precisión, recall y F1-score. Los resultados detallados de esta comparación se presentan en la Sección 6.
 
 ---
 
@@ -224,7 +220,7 @@ El análisis de Spearman también revela asociaciones que no eran evidentes en e
 
 #### 4.3. Identificación de Variables Clave: Análisis de Importancia
 
-Una vez comprendidas las relaciones entre variables, el siguiente paso fue identificar cuáles de ellas tienen mayor poder discriminante para predecir el riesgo de incumplimiento. Para ello, se entrenó un modelo de Random Forest —un algoritmo de aprendizaje automático basado en árboles de decisión— y se extrajo la importancia relativa de cada variable.
+Una vez comprendidas las relaciones entre variables, el siguiente paso fue identificar cuáles de ellas tienen mayor poder discriminante para predecir el riesgo de incumplimiento. Para ello, se entrenó un modelo de Random Forest —un algoritmo de aprendizaje automático basado en árboles de decisión— configurado con 50 estimadores, profundidad máxima de 10, semilla aleatoria de 42 y ejecución en paralelo (`n_jobs=-1`), y se extrajo la importancia relativa de cada variable.
 
 El Random Forest es una herramienta útil para este propósito porque puede capturar relaciones no lineales e interacciones entre variables, y proporciona una medida de importancia que refleja cuánto contribuye cada variable a la capacidad predictiva del modelo. Aunque esta medida es exploratoria y no constituye una explicación formal del modelo final de red neuronal, sí proporciona una guía valiosa sobre qué variables parecen concentrar el poder discriminante en el dataset.
 
@@ -396,32 +392,104 @@ La siguiente tabla presenta los resultados obtenidos por la red neuronal y la re
 
 | Modelo | PR-AUC (Prueba) | Accuracy | F1 Clase 1 | Precisión Clase 1 | Recall Clase 1 |
 |--------|-----------------|----------|------------|-------------------|----------------|
-| Red Neuronal | 0.9827 | 0.9519 | 0.9040 | 0.8370 | 0.9827 |
-| Regresión Logística | 0.9603 | 0.9323 | 0.8677 | 0.7893 | 0.9634 |
+| Red Neuronal | 0.9831 | 0.9532 | 0.9062 | 0.8409 | 0.9824 |
+| Regresión Logística | 0.9603 | 0.9326 | 0.8681 | 0.7907 | 0.9624 |
 
 *Nota.* La tabla muestra las métricas principales de desempeño para ambos modelos en el conjunto de prueba. Los valores más altos en cada métrica indican mejor desempeño.
 
-Los resultados muestran claramente que la red neuronal supera a la regresión logística en todas las métricas evaluadas. Esta diferencia es particularmente notable en el PR-AUC, donde la red neuronal alcanza un valor de 0.9827 frente a 0.9603 de la regresión logística. Esta mejora de más de 2 puntos porcentuales es significativa, especialmente considerando que el PR-AUC es la métrica más relevante para problemas con clases desbalanceadas.
+Los resultados muestran claramente que la red neuronal supera a la regresión logística en todas las métricas evaluadas. Esta diferencia es particularmente notable en el PR-AUC, donde la red neuronal alcanza un valor de 0.9831 frente a 0.9603 de la regresión logística. Esta mejora de más de 2 puntos porcentuales es significativa, especialmente considerando que el PR-AUC es la métrica más relevante para problemas con clases desbalanceadas.
 
-En términos de accuracy global, la red neuronal logra un 95.19% de clasificaciones correctas, frente al 93.23% de la regresión logística. Aunque esta diferencia puede parecer pequeña, representa una mejora sustancial en el contexto de más de 38,000 evaluaciones realizadas en el conjunto de prueba.
+En términos de accuracy global, la red neuronal logra un 95.32% de clasificaciones correctas, frente al 93.26% de la regresión logística. Aunque esta diferencia puede parecer pequeña, representa una mejora sustancial en el contexto de más de 38,000 evaluaciones realizadas en el conjunto de prueba.
 
-Donde la diferencia es más crítica es en el recall de la clase de incumplimiento. La red neuronal logra detectar el 98.27% de los casos reales de incumplimiento, mientras que la regresión logística detecta el 96.34%. Esta diferencia de casi 2 puntos porcentuales significa que la red neuronal es capaz de identificar aproximadamente 170 casos adicionales de incumplimiento que la regresión logística habría pasado por alto. En el contexto financiero, donde cada caso de incumplimiento no detectado representa una pérdida potencial, esta mejora es significativa.
+Donde la diferencia es más crítica es en el recall de la clase de incumplimiento. La red neuronal logra detectar el 98.24% de los casos reales de incumplimiento, mientras que la regresión logística detecta el 96.24%. Esta diferencia de 2 puntos porcentuales significa que la red neuronal es capaz de identificar aproximadamente 175 casos adicionales de incumplimiento que la regresión logística habría pasado por alto. En el contexto financiero, donde cada caso de incumplimiento no detectado representa una pérdida potencial, esta mejora es significativa.
 
-La precisión de la clase de incumplimiento también es superior en la red neuronal (83.70% vs 78.93%), lo que significa que cuando el modelo predice incumplimiento, es más probable que efectivamente lo sea. Esto reduce el número de falsos positivos, es decir, casos que el modelo clasifica erróneamente como incumplimientos cuando en realidad son préstamos cumplidos.
+La precisión de la clase de incumplimiento también es superior en la red neuronal (84.09% vs 79.07%), lo que significa que cuando el modelo predice incumplimiento, es más probable que efectivamente lo sea. Esto reduce el número de falsos positivos, es decir, casos que el modelo clasifica erróneamente como incumplimientos cuando en realidad son préstamos cumplidos.
 
-#### 6.3. Interpretación de los Resultados desde la Perspectiva de Negocio
+#### 6.3. Análisis Visual del Desempeño del Modelo
+
+Complementando las métricas cuantitativas presentadas anteriormente, se generaron cuatro visualizaciones clave que permiten evaluar el comportamiento del modelo desde perspectivas adicionales: la dinámica del entrenamiento, la distribución de aciertos y errores, la capacidad discriminante global, y el rendimiento bajo condiciones de desbalance de clases.
+
+##### 6.3.1. Dinámica de Entrenamiento: Curvas de Pérdida
+
+**Figura 6**  
+*Curvas de Pérdida (Binary Crossentropy) durante el Entrenamiento*
+
+![Curvas de pérdida](./images/loss_curves.png)
+
+*Nota.* Evolución de la función de pérdida Binary Crossentropy a lo largo de 60 épocas de entrenamiento, tanto para el conjunto de entrenamiento (Train Loss) como para el conjunto de validación (Val Loss). La cercanía entre ambas curvas a lo largo de todo el entrenamiento indica que el modelo generaliza correctamente sin presentar sobreajuste.
+
+La Figura 6 muestra la evolución de la función de pérdida (Binary Crossentropy) a lo largo de 60 épocas de entrenamiento, tanto para el conjunto de entrenamiento como para el de validación. El análisis de estas curvas proporciona información fundamental sobre la dinámica de aprendizaje del modelo:
+
+**Comportamiento de las curvas:** Ambas curvas decrecen de forma pronunciada durante las primeras 10 épocas, lo que indica un aprendizaje rápido y eficiente en la fase inicial del entrenamiento. Esta caída acelerada refleja que el modelo logra capturar rápidamente los patrones más evidentes que distinguen a los prestatarios cumplidos de los incumplidos.
+
+**Estabilización y convergencia:** Alrededor de la época 30, las curvas comienzan a aplanarse progresivamente. Hacia el final del entrenamiento (época 60), el Train Loss se estabiliza cerca de 0.167 y el Val Loss cerca de 0.174, lo que indica que el modelo ha convergido hacia un mínimo estable de la función de pérdida.
+
+**Diagnóstico de sobreajuste:** La brecha (*gap*) entre la pérdida de entrenamiento y la de validación es extremadamente pequeña y se mantiene paralela a lo largo de todo el entrenamiento. Esta es una excelente señal: el modelo tiene una gran capacidad de generalización y no presenta problemas significativos de sobreajuste (*overfitting*). La regularización L1, el dropout de 0.5 y la normalización por lotes —combinados con los mecanismos de detención temprana y reducción de la tasa de aprendizaje— resultaron efectivos para controlar la complejidad del modelo durante el entrenamiento.
+
+##### 6.3.2. Distribución de Aciertos y Errores: Matriz de Confusión
+
+**Figura 7**  
+*Matriz de Confusión en el Conjunto de Prueba*
+
+![Matriz de confusión](./images/confusion_matrix.png)
+
+*Nota.* Matriz de confusión que muestra la distribución de las predicciones del modelo en el conjunto de prueba, clasificando los clientes entre Good (0) —buenos pagadores— y Default (1) —clientes en impago—. Los valores de la diagonal principal representan clasificaciones correctas, mientras que los valores fuera de la diagonal representan errores de clasificación.
+
+La matriz de confusión (Figura 7) evalúa el desempeño del modelo en el conjunto de prueba, proporcionando un desglose detallado de los aciertos y errores por clase. A partir del reporte de clasificación del modelo se derivan las siguientes métricas:
+
+**Exactitud (Accuracy):** La proporción de clasificaciones correctas sobre el total de evaluaciones es de 95.32%. Este valor confirma el alto nivel de acierto global del modelo.
+
+**Sensibilidad / Exhaustividad (Recall para Default):** El modelo es capaz de detectar al 98.24% de las personas que van a caer en impago. Desde la perspectiva del negocio, esto es crucial para el análisis de riesgo: el sistema identifica prácticamente a la totalidad de los clientes que presentarán problemas de pago, permitiendo a la institución financiera tomar acciones preventivas de manera oportuna.
+
+**Precisión (Precision para Default):** Cuando el modelo genera una alerta de Default, tiene un 84.09% de acierto. Esto significa que un 15.91% de las alertas generadas son falsas alarmas —clientes buenos que son bloqueados o enviados a revisión manual—. Si bien este porcentaje representa un costo operativo asociado a la gestión de falsos positivos, es un trade-off aceptable en el contexto de riesgo crediticio, donde el costo de no detectar un caso de incumplimiento suele ser significativamente mayor que el costo de revisar manualmente un falso positivo.
+
+##### 6.3.3. Capacidad Discriminante Global: Curva ROC
+
+**Figura 8**  
+*Curva ROC (Receiver Operating Characteristic)*
+
+![Curva ROC](./images/roc_auc_curve.png)
+
+*Nota.* Curva ROC que contrasta la tasa de verdaderos positivos (True Positive Rate) frente a la tasa de falsos positivos (False Positive Rate) a distintos umbrales de decisión. El área bajo la curva (AUC) cuantifica la capacidad global del modelo para discriminar entre las dos clases. La línea diagonal punteada representa el desempeño de un clasificador aleatorio.
+
+La curva ROC (Figura 8) proporciona una evaluación comprehensiva de la capacidad del modelo para discriminar entre las dos clases a lo largo de todos los umbrales de decisión posibles.
+
+**Métrica AUC:** El área bajo la curva es de 0.9943, un valor excepcionalmente cercano al máximo teórico de 1.0.
+
+**Interpretación:** Un AUC de 0.9943 representa un rendimiento casi perfecto en cuanto a la capacidad del modelo para separar o discriminar entre las dos clases —saber quién es solvente y quién no—. La curva se eleva de manera casi vertical hacia la esquina superior izquierda, alejándose drásticamente de la línea diagonal de clasificación aleatoria (AUC = 0.5). Esto significa que, para prácticamente cualquier umbral de decisión, el modelo logra mantener una tasa de verdaderos positivos muy alta con una tasa de falsos positivos muy baja.
+
+Este resultado complementa y contextualiza el PR-AUC reportado en la Tabla 1. Mientras que el ROC-AUC de 0.9943 evalúa el desempeño global del modelo en todos los umbrales, el PR-AUC se enfoca específicamente en el rendimiento sobre la clase minoritaria (incumplimiento). La convergencia de ambas métricas hacia valores cercanos a 1.0 confirma la solidez del modelo.
+
+##### 6.3.4. Rendimiento bajo Desbalance de Clases: Curva Precision-Recall
+
+**Figura 9**  
+*Curva Precision-Recall*
+
+![Curva Precision-Recall](./images/precision_recall_curve.png)
+
+*Nota.* Curva Precision-Recall que muestra la relación entre la precisión (Precision) y la exhaustividad (Recall) a distintos umbrales de decisión. Dado que en problemas de riesgo crediticio las clases suelen estar desbalanceadas, esta curva constituye la métrica más rigurosa para evaluar el desempeño del modelo sobre la clase de interés (Default). El valor de Average Precision (AP) resume el rendimiento global de la curva.
+
+En problemas de riesgo crediticio y detección de fraudes, las clases suelen estar desbalanceadas —en este dataset, la clase de incumplimiento representa aproximadamente el 23% de los registros—. En este contexto, la curva Precision-Recall es considerada la métrica más honesta y rigurosa, ya que se enfoca exclusivamente en el desempeño del modelo sobre la clase minoritaria, sin verse influida por el alto número de verdaderos negativos de la clase mayoritaria.
+
+**Métrica AP (Average Precision):** El modelo alcanza un valor de 0.9831, es decir, un 98.31% de precisión promedio.
+
+**Interpretación:** Un AP de 98.31% confirma que el rendimiento es sobresaliente incluso bajo la lupa más exigente de la precisión y el recall combinados. La curva se mantiene plana en la parte superior (Precision = 1.0) durante casi todo el recorrido del Recall, y solo empieza a decaer levemente cuando el Recall supera el 80%-90%. Esto demuestra que el modelo mantiene una alta fidelidad —generando muy pocos falsos positivos— a pesar de capturar a casi la totalidad de los clientes en default.
+
+Este resultado es particularmente relevante porque valida que el alto recall del modelo (98.24%) no se logra a costa de una precisión deteriorada. El modelo logra un equilibrio excepcional entre detectar la mayor cantidad posible de casos de incumplimiento y mantener la calidad de las alertas generadas, lo cual es esencial para la viabilidad operativa del sistema en un entorno financiero real.
+
+#### 6.4. Interpretación de los Resultados desde la Perspectiva de Negocio
 
 Los resultados obtenidos demuestran que la red neuronal no solo es técnicamente superior a la regresión logística, sino que también es más adecuada para los objetivos del proyecto. En el contexto de monitoreo de cartera y cobranza temprana, el objetivo principal es identificar la mayor cantidad posible de casos de incumplimiento, incluso si esto implica aceptar un número moderado de falsos positivos.
 
-El alto recall de la red neuronal (98.27%) significa que el sistema es capaz de detectar casi todos los casos de incumplimiento, lo que permite a la institución financiera tomar acciones preventivas de manera oportuna. Esto puede incluir contacto temprano con el prestatario, oferta de reestructuración de deuda, o asignación prioritaria a equipos de cobranza.
+El alto recall de la red neuronal (98.24%) significa que el sistema es capaz de detectar casi todos los casos de incumplimiento, lo que permite a la institución financiera tomar acciones preventivas de manera oportuna. Esto puede incluir contacto temprano con el prestatario, oferta de reestructuración de deuda, o asignación prioritaria a equipos de cobranza.
 
-Al mismo tiempo, la precisión de 83.70% indica que la mayoría de las alertas generadas por el sistema son legítimas, lo que reduce el costo operativo asociado con la gestión de falsos positivos. En términos prácticos, esto significa que los equipos de cobranza pueden enfocarse en los casos que realmente lo necesitan, mejorando la eficiencia operativa.
+Al mismo tiempo, la precisión de 84.09% indica que la mayoría de las alertas generadas por el sistema son legítimas, lo que reduce el costo operativo asociado con la gestión de falsos positivos. En términos prácticos, esto significa que los equipos de cobranza pueden enfocarse en los casos que realmente lo necesitan, mejorando la eficiencia operativa.
 
-El PR-AUC de 0.9827 es excepcionalmente alto y demuestra que el modelo tiene una capacidad sobresaliente para distinguir entre préstamos cumplidos e incumplidos. Este nivel de desempeño es consistente con los mejores resultados reportados en la literatura académica sobre credit scoring (Lessmann et al., 2015).
+El PR-AUC de 0.9831 es excepcionalmente alto y demuestra que el modelo tiene una capacidad sobresaliente para distinguir entre préstamos cumplidos e incumplidos. Este nivel de desempeño es consistente con los mejores resultados reportados en la literatura académica sobre credit scoring (Lessmann et al., 2015).
 
 Es importante destacar que el umbral de decisión fue optimizado para maximizar el F2-score, una métrica que pondera más el recall que la precisión. Esto refleja una política de detección sensible, orientada a priorizar la identificación de casos riesgosos sobre la minimización de falsos positivos. El umbral óptimo de 0.54933 (ligeramente superior al valor por defecto de 0.5) ajusta la sensibilidad del modelo para equilibrar la detección de incumplimientos con la precisión de las predicciones.
 
-#### 6.4. Limitaciones de la Evaluación
+#### 6.5. Limitaciones de la Evaluación
 
 Aunque los resultados son sólidos, es importante reconocer algunas limitaciones de la evaluación realizada. En primer lugar, el conjunto de datos utilizado proviene de una plataforma específica de préstamos peer-to-peer (LendingClub), lo que puede limitar la generalización de los resultados a otros contextos financieros o a diferentes tipos de préstamos.
 
@@ -437,7 +505,7 @@ En tercer lugar, aunque el modelo fue evaluado en un conjunto de prueba independ
 
 El desarrollo de un modelo predictivo es solo el primer paso hacia la creación de una solución completa. Para que el modelo genere valor real, debe ser integrado en una aplicación práctica que permita a los usuarios finales utilizar sus predicciones de manera intuitiva y efectiva. En este proyecto, se desarrolló una aplicación web que transforma las predicciones del modelo en un score crediticio fácil de interpretar.
 
-El scorecard implementado convierte la probabilidad de incumplimiento generada por el modelo en una puntuación numérica en una escala de 300 a 850, similar a las escalas utilizadas por las agencias de crédito tradicionales como FICO. La conversión sigue una regla de transformación lineal simple:
+El scorecard implementado convierte la probabilidad de incumplimiento generada por el modelo en una puntuación numérica en una escala de 300 a 850, similar a las escalas utilizadas por las agencias de crédito tradicionales como FICO. Es importante aclarar que esta transformación corresponde a un mapeo lineal simplificado y no a un scorecard estadístico convencional basado en odds mapping y asignación ponderada de puntos por variable. La conversión sigue una regla de transformación lineal simple:
 
 **Score = 850 - (Probabilidad de Incumplimiento × 550)**
 
@@ -449,7 +517,7 @@ El scorecard no solo facilita la interpretación de las predicciones, sino que t
 
 Para hacer el modelo accesible a los usuarios finales, se desarrolló una aplicación web que permite ingresar las características de un préstamo y obtener una predicción de riesgo en tiempo real. La aplicación está construida con tecnologías modernas de desarrollo web y se comunica con el modelo a través de una API RESTful desarrollada con FastAPI.
 
-**Figura 6**  
+**Figura 10**  
 *Interfaz de la Aplicación Web de Predicción de Riesgo Crediticio*
 
 ![Aplicación web](./images/webapp.png)
@@ -492,7 +560,7 @@ Para las instituciones financieras, esta herramienta representa una mejora signi
 
 El proyecto demostró que es posible desarrollar un sistema de predicción de riesgo crediticio basado en redes neuronales profundas que supere significativamente a los métodos tradicionales como la regresión logística. Los resultados obtenidos muestran que la red neuronal no solo es más precisa en términos generales, sino que también es superior en la detección de casos de incumplimiento, que es el objetivo principal del sistema.
 
-La combinación de un PR-AUC de 0.9827 y un recall de 0.9827 para la clase de incumplimiento demuestra que el modelo es capaz de identificar casi todos los casos de incumplimiento manteniendo una alta precisión. Este nivel de desempeño es excepcional y está en línea con los mejores resultados reportados en la literatura académica sobre credit scoring.
+La combinación de un PR-AUC de 0.9831, un ROC-AUC de 0.9943, un Average Precision de 0.9831, y un recall de 0.9824 para la clase de incumplimiento demuestra que el modelo es capaz de identificar casi todos los casos de incumplimiento manteniendo una alta precisión. Las curvas de pérdida confirman además que el entrenamiento convergió de manera estable sin presentar sobreajuste, con una brecha mínima entre la pérdida de entrenamiento y validación. Este nivel de desempeño es excepcional y está en línea con los mejores resultados reportados en la literatura académica sobre credit scoring.
 
 Más allá del aspecto técnico, el proyecto demostró que es posible crear una solución completa que va desde el análisis de datos hasta la implementación de una aplicación web práctica. La integración del modelo en una interfaz amigable, con visualizaciones claras y explicaciones transparentes, convierte un modelo técnico complejo en una herramienta útil para la toma de decisiones financieras.
 
@@ -520,7 +588,7 @@ Aunque el proyecto logró sus objetivos principales, es importante reconocer sus
 
 **Validación temporal:** El modelo fue evaluado en un conjunto de prueba estático, pero no se realizó una validación temporal que simule su desempeño a lo largo del tiempo. En la práctica, los patrones de riesgo crediticio pueden cambiar debido a factores macroeconómicos o cambios en el comportamiento de los prestatarios. Una evaluación robusta debería incluir pruebas de estabilidad temporal y mecanismos de actualización continua del modelo.
 
-**Métricas incompletas:** Aunque el proyecto reporta PR-AUC, accuracy, precisión, recall y F1-score, no se recuperaron las cifras finales de ROC-AUC en las salidas visibles del notebook. Esta ausencia debe leerse como una brecha documental del entregable y no como una limitación técnica del modelo. Un trabajo futuro debería incluir el reporte completo de todas las métricas relevantes.
+**Equidad y sesgo (Fairness):** No se realizó un análisis exhaustivo de equidad para evaluar si el modelo presenta sesgos diferenciales contra subgrupos demográficos protegidos (por ejemplo, por género, etnia o ubicación geográfica). En el contexto financiero, esta evaluación es fundamental para cumplir con regulaciones antidiscriminación y garantizar que las decisiones crediticias sean justas. Un trabajo futuro debería incorporar métricas de equidad (como *equalized odds* o *demographic parity*) y técnicas de mitigación de sesgo si se detectan disparidades.
 
 **Generalización a otros contextos:** El modelo fue entrenado y evaluado en un dataset específico de préstamos peer-to-peer de LendingClub. Aunque los resultados son prometedores, no está claro cómo se desempeñaría el modelo en otros contextos financieros o con diferentes tipos de préstamos. Un trabajo futuro debería explorar la transferibilidad del modelo a otros datasets y contextos.
 
@@ -538,7 +606,7 @@ Más allá de los resultados técnicos, el proyecto deja una lección importante
 
 ### 9. REFERENCIAS BIBLIOGRÁFICAS
 
-Basel Committee on Banking Supervision. (2019). *Principles for the effective management and supervision of climate-related financial risks*. Bank for International Settlements. https://www.bis.org/bcbs/publ/d485.pdf
+Basel Committee on Banking Supervision. (2020). *Studies on the validation of internal ratings-based models* (revised). Bank for International Settlements. https://www.bis.org/bcbs/publ/d494.pdf
 
 d0ubt0. (s.f.). *credit-risk* [Repositorio de GitHub]. GitHub. Recuperado el 21 de abril de 2026, de https://github.com/d0ubt0/credit-risk
 
@@ -546,7 +614,7 @@ d0ubt0. (s.f.). *credit-risk-neuronal-network* [Aplicación web]. Netlify. Recup
 
 Goodfellow, I., Bengio, Y., & Courville, A. (2016). *Deep learning*. MIT Press. https://www.deeplearningbook.org/
 
-Kaggle. (s.f.). *Credit Risk Dataset*. Recuperado el 21 de abril de 2026, de https://www.kaggle.com/datasets/laotse/credit-risk-dataset
+Kaggle. (s.f.). *Lending Club Loan Data*. Recuperado el 21 de abril de 2026, de https://www.kaggle.com/datasets/laotse/credit-risk-dataset
 
 LeCun, Y., Bengio, Y., & Hinton, G. (2015). Deep learning. *Nature, 521*(7553), 436-444. https://doi.org/10.1038/nature14539
 
@@ -561,6 +629,8 @@ scikit-learn developers. (s.f.). *scikit-learn: Machine learning in Python*. Rec
 TensorFlow Developers. (s.f.). *TensorFlow Keras*. Recuperado el 21 de abril de 2026, de https://www.tensorflow.org/api_docs/python/tf/keras
 
 Thomas, L. C. (2009). *Consumer credit models: Pricing, profit, and portfolios*. Oxford University Press.
+
+Szegedy, C., Vanhoucke, V., Ioffe, S., Shlens, J., & Wojna, Z. (2016). Rethinking the inception architecture for computer vision. *Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (CVPR)*, 2818-2826. https://doi.org/10.1109/CVPR.2016.308
 
 ---
 
