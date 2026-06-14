@@ -14,11 +14,9 @@ load_dotenv()
 app = FastAPI(title="Credit Risk Neural Network API")
 
 # Setup CORS
-allowed_origins = os.getenv("ALLOWED_ORIGINS", "*").split(",")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=allowed_origins,
-    allow_credentials=True,
+    allow_origins=["https://credit-risk-neuronal-network.netlify.app"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
