@@ -6,20 +6,18 @@
  * global de la evaluación de riesgo crediticio.
  */
 import { Sparkles } from 'lucide-react';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import AboutModel from './components/AboutModel';
 import CreditForm from './components/CreditForm';
 import FeatureImportance from './components/FeatureImportance';
 import Footer from './components/Footer';
-import Hero from './components/Hero';
 import Navbar from './components/Navbar';
 import PopulationChart from './components/PopulationChart';
+import ReadmeViewer from './components/ReadmeViewer';
 import Resources from './components/Resources';
 import RiskResult from './components/RiskResult';
-import ReadmeViewer from './components/ReadmeViewer';
 import { calculateCreditRisk, checkServerHealth } from './model/creditRiskModel';
 import distributionData from "./population_distribution.json";
-import { useEffect } from 'react';
 
 export default function App() {
   // Estado del resultado de la evaluación
@@ -84,7 +82,8 @@ export default function App() {
       <Navbar onShowDocs={handleShowDocs} />
 
       {/* Hero/Landing section */}
-      <Hero serverStatus={serverStatus} />
+
+      {/* <Hero serverStatus={serverStatus} /> */}
 
       {/* Sección de evaluación: Formulario + Resultados */}
       <section id="evaluacion" className="py-24 px-4 sm:px-6">
