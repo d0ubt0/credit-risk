@@ -2,10 +2,10 @@
  * ============================================
  * Hero - Sección principal de bienvenida
  * ============================================
- * Primer bloque visual que el usuario ve. 
+ * Primer bloque visual que el usuario ve.
  * Incluye CTA para desplazarse al formulario de evaluación.
  */
-import { ArrowDown, Shield, BarChart3, Brain } from 'lucide-react';
+import { ArrowDown, Brain, Shield } from 'lucide-react';
 
 export default function Hero({ serverStatus }) {
   const scrollToEval = () => {
@@ -51,12 +51,13 @@ export default function Hero({ serverStatus }) {
 
       <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 text-center">
         {/* Badge */}
+{/*
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-light mb-8 animate-fade-in-up">
           <div className={`w-2 h-2 rounded-full ${status.color} animate-pulse`} />
           <span className={`text-sm font-medium ${status.textColor}`}>
             {status.text}
           </span>
-        </div>
+        </div> */}
 
         {/* Main heading */}
         <h1 className="text-4xl sm:text-5xl md:text-7xl font-black tracking-tight mb-6 animate-fade-in-up">
@@ -79,8 +80,8 @@ export default function Hero({ serverStatus }) {
         <div className="animate-fade-in-up-delay-2">
           <button
             onClick={scrollToEval}
-            className="btn-primary inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-brand-600 to-brand-500 
-            text-white font-semibold text-lg rounded-2xl hover:from-brand-500 hover:to-brand-400 
+            className="btn-primary inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-brand-600 to-brand-500
+            text-white font-semibold text-lg rounded-2xl hover:from-brand-500 hover:to-brand-400
             transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-brand-500/25 cursor-pointer"
           >
             Comenzar Evaluación
